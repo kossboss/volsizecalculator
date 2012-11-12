@@ -97,7 +97,7 @@ namespace VolSizeCalc.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NOTE: The numbers here are based on a calculation and may vary in the actual system. Also note this program is time independent meaning it does not care about the chronological order that you add or remove drives. In real-life each system preforms under its very own characteristics when drives are added and does depend on time(in a way), for example: if your first drive was a 2TB drive, I would not be able to add smaller drives there after to expand. So hence, each calculation is as if you have factory defa [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to NOTE: Look at the BOLD RED NUMBERS FOR THE CURRENT VALUE The numbers here are based on a calculation and may vary in the actual system. Also note this program is time independent meaning it does not care about the chronological order that you add or remove drives. In real-life each system preforms under its very own characteristics when drives are added and does depend on time(in a way), for example: if your first drive was a 2TB drive, I would not be able to add smaller drives there after to expand. So hen [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HelpMessage {
             get {

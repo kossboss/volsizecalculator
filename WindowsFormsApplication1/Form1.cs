@@ -64,7 +64,8 @@ namespace VolSizeCalc
         //
         const double cfTBtoTB = 0.90949470177; //on google: 1000*1000*1000*1000/1024/1024/1024
         const double cfGBtoGB = 0.93132257461; //on google: 1000*1000*1000/1024/1024/1024
-       bool comparison_enabled = false;
+       bool comparison_enabled = true;
+        private bool comparision1st = false;
         private bool MoreInfo;
         
         private const int fsizereg = 10;
@@ -220,6 +221,8 @@ namespace VolSizeCalc
         }
         private void make_all(int num_of_drives)
         {
+            comparision1st = false;
+            clear_baseline();
             int n = num_of_drives;
             int offx, offy, modd;
             int d = drives.Count;
@@ -638,6 +641,9 @@ namespace VolSizeCalc
             }
             else
             {
+                if (comparision1st)
+                {
+                
                 //difference
                 snapshot0d = snapshot - snapshot0;
                 drives0d = used - drives0;
@@ -660,7 +666,11 @@ namespace VolSizeCalc
                 onediskgb0d = onediskgb0 - onediskgb;
                 onedisktb0d = onedisktb0 - onedisktb;
                 onedisktb0d.ToString();
+
             }
+        }
+        
+        
             //key is to calculate the difference before setting the new 0
             torun = false;
             //show results
@@ -750,24 +760,13 @@ namespace VolSizeCalc
                 }
             }
 
-            //addline("Space Allotted in Base 10 - Raid5: " + String.Format("{0:0}", toraid5) + " GB, Raid6: " + String.Format("{0:0}", toraid6) + " GB");
+//addline("Space Allotted in Base 10 - Raid5: " + String.Format("{0:0}", toraid5) + " GB, Raid6: " + String.Format("{0:0}", toraid6) + " GB");
             addline("Space Allotted in Base 10 - Raid5: " + String.Format("{0:0.000}", spaceR5Tb) + " TB, Raid6: " + String.Format("{0:0.000}", spaceR6Tb) + " TB");
             //addline("Space Allotted in Base 2 - Raid5: " + String.Format("{0:0}", spaceR5_2) + " GB, Raid6: " + String.Format("{0:0}", spaceR6_2) + " GB");
             addline("Space Allotted in Base 2 - Raid5: " + String.Format("{0:0.000}", spaceR52Tb) + " TB, Raid6: " + String.Format("{0:0.000}", spaceR62Tb) + " TB");
             addline_italic("NOTE: Every size value below is in base 2, 'real space'");
             if (MoreInfo)
             {
-//                addline("OS & SWAP will take up " + String.Format("{0:0.000}", osperdisk) + " GB/Disk on " + used +
-//                        " Disks, Totaling: " + String.Format("{0:0.000}", totalosandswap));
-//                addline("The raidover head at " + raid_overhead*100 + "% will cost - Raid5: " +
-//                        String.Format("{0:0}", ro5) + " GB Raid6: " + String.Format("{0:0}", ro6) + " GB");
-//                addline("After OS & SWAP - Raid5: " + String.Format("{0:0.000}", afteros5) + " GB, Raid6: " +
-//                        String.Format("{0:0.000}", afteros6) + " GB");
-//                addline("After Overhead  - Raid5: " + String.Format("{0:0.000}", afterOverhead5) + " GB, Raid6: " +
-//                        String.Format("{0:0.000}", afterOverhead6) + " GB");
-//                addline("After Snapshot  - Raid5: " + String.Format("{0:0.000}", final5Gb) + " GB, Raid6: " +
-//                        String.Format("{0:0.000}", final6Gb) + " GB = FINAL VALUES");
-
 
                 addword_bold("OS & SWAP "); addword(" will take up ");
                 addword_bred( String.Format("{0:0.000}", osperdisk)+ " GB/Disk");
@@ -776,29 +775,35 @@ namespace VolSizeCalc
                 addword_bold(", Totaling: ");
                 addword_bred(String.Format("{0:0.000}", totalosandswap));
                 addnl();
+                addword_bold("OS & SWAP "); addword(" will take up ");
+                addword_bblue(String.Format("{0:0.000}", osper0) + " GB/Disk");
+                addword(" on ");
+                addword_bblue(drives0 + " Disks");
+                addword_bold(", Totaling: ");
+                addword_bblue(String.Format("{0:0.000}", ostotal0));
+                addnl();
 
 
 
 
-               
+
                 addword_bold("Raid Overhead ");
                    addword(          "at ");
-
-
-
-                addword_bred(String.Format("{0:0.0}", raid_overhead*100) + "%");
-
-
-                addword(" will cost ");
-                            
-
+                addword_bold(String.Format("{0:0.0}", raid_overhead*100) + "%");
+               addword(" will cost ");
                      addword_bold(        "- Raid5: "); 
-
-
-
                 addword_bred(String.Format("{0:0}", ro5)+ " GB");
                 addword_bold(", Raid6: ");
                 addword_bred(String.Format("{0:0}", ro6) + " GB");
+                addnl();
+                addword_bold("Raid Overhead ");
+                addword("at ");
+                addword_bold(String.Format("{0:0.0}", raid_overhead * 100) + "%");
+                addword(" will cost ");
+                addword_bold("- Raid5: ");
+                addword_bblue(String.Format("{0:0}", ro10) + " GB");
+                addword_bold(", Raid6: ");
+                addword_bblue(String.Format("{0:0}", ro20) + " GB");
                 addnl();
 
 
@@ -808,15 +813,18 @@ namespace VolSizeCalc
                 addword_bold(" OS & SWAP");
                 addword(" - ");
                 addword_bold ("Raid5: "); 
-
-
-
-
                 addword_bred(String.Format("{0:0.000}", afteros5)+ " GB");
                 addword_bold(", Raid6: " );
                 addword_bred(String.Format("{0:0.000}", afteros6) + " GB"); 
                 addnl();
-
+                addline_underline("After");
+                addword_bold(" OS & SWAP");
+                addword(" - ");
+                addword_bold("Raid5: ");
+                addword_bblue(String.Format("{0:0.000}", afteros50) + " GB");
+                addword_bold(", Raid6: ");
+                addword_bblue(String.Format("{0:0.000}", afteros60) + " GB");
+                addnl();
 
 
 
@@ -824,29 +832,37 @@ namespace VolSizeCalc
                      addword_bold("Raid Overhead ");
                       addword(" - ");
                       addword_bold("Raid5: "); 
-
-
-
                 addword_bred(String.Format("{0:0.000}", afterOverhead5) +  " GB");
                 addword_bold(", Raid6: ");
               addword_bred(String.Format("{0:0.000}", afterOverhead6) + " GB");
                 addnl();
-
-
+                addline_underline("After ");
+                addword_bold("Raid Overhead ");
+                addword(" - ");
+                addword_bold("Raid5: ");
+                addword_bblue(String.Format("{0:0.000}", afterro50) + " GB");
+                addword_bold(", Raid6: ");
+                addword_bblue(String.Format("{0:0.000}", afterro60) + " GB");
+                addnl();
 
 
                 addline_underline("After ");
                 addword_bold("Snapshot ");
                 addword(" - ");
                 addword_bold("Raid5: "); 
-
-
-
-
                 addword_bred(String.Format("{0:0.000}", final5Gb)  + " GB");
                 addword_bold(", Raid6: ");
-                addword_bred( String.Format("{0:0.000}", final6Gb)  + " GB");
+                addword_bred(String.Format("{0:0.000}", final6Gb) + " GB");
              addword_bold(" = FINAL VALUES");
+                 addnl();
+                 addline_underline("After ");
+                 addword_bold("Snapshot ");
+                 addword(" - ");
+                 addword_bold("Raid5: ");
+                 addword_bblue(String.Format("{0:0.000}", final5gb0) + " GB");
+                 addword_bold(", Raid6: ");
+                 addword_bblue(String.Format("{0:0.000}", final6gb0) + " GB");
+                 addword_bold(" = FINAL VALUES");
                  addnl();
             }
             else
@@ -864,6 +880,33 @@ namespace VolSizeCalc
                 addword_bold(string.Format("Snapshot: ")); 
                 addword_bred(string.Format("{0:0}", snapshot));
                 addnl();
+                if(comparison_enabled)
+                {
+                    addword(string.Format("Other factors - ")); //"Os+Swap: {0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap, ro5, ro6, snapshot));
+                    addword_bold(string.Format("Os&Swap: ")); //"{0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap, ro5, ro6, snapshot));
+                    addword_bblue(string.Format("{0:0.000}", ostotal0));
+                    addword(string.Format(" - "));
+                    addword_bold(string.Format("R5/R6 Overhead: "));
+                    addword_bblue(string.Format("{0:0.0}", ro10));
+                    addword(string.Format("/"));
+                    addword_bblue(string.Format("{0:0.0}", ro20));
+                    addword(string.Format(" - "));
+                    addword_bold(string.Format("Snapshot: "));
+                    addword_bblue(string.Format("{0:0}", snapshot0));
+                    addnl();
+                    addword(string.Format("Difference ----- ")); //"Os+Swap: {0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap, ro5, ro6, snapshot));
+                    addword_bold(string.Format("Os&Swap: ")); //"{0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap, ro5, ro6, snapshot));
+                    addword_blue(string.Format("{0:0.000}", ostotal0d));
+                    addword(string.Format(" -- "));
+                    addword_bold(string.Format("R5/R6 Overhead: "));
+                    addword_blue(string.Format("{0:0.0}", ro10d));
+                    addword(string.Format("/"));
+                    addword_blue(string.Format("{0:0.0}", ro20d));
+                    addword(string.Format(" -- "));
+                    addword_bold(string.Format("Snapshot: "));
+                    addword_blue(string.Format("{0:0}", snapshot0d));
+                    addnl();
+                }
                 //addword(string.Format("Other factors - Os+Swap: {0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap, ro5, ro6, snapshot));
             }
             addline_italic("RAID5: " + pr5 + " - RAID6: " + pr6);
@@ -1341,8 +1384,10 @@ namespace VolSizeCalc
         private void button3_Click(object sender, EventArgs e)
         {
            // clear_baseline();
+            comparision1st = true;
             torun = true;
-            premakeall();
+            calc(true);
+            //premakeall();
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
