@@ -43,6 +43,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.cms = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.button3 = new System.Windows.Forms.Button();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.nSnap)).BeginInit();
             this.SuspendLayout();
             // 
@@ -66,17 +67,19 @@
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(15, 13);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(104, 13);
+            this.label1.Size = new System.Drawing.Size(126, 13);
             this.label1.TabIndex = 2;
             this.label1.Text = "# of Drives (0 to 60):";
             // 
             // tb_nd
             // 
-            this.tb_nd.Location = new System.Drawing.Point(125, 10);
+            this.tb_nd.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_nd.Location = new System.Drawing.Point(147, 10);
             this.tb_nd.Name = "tb_nd";
-            this.tb_nd.Size = new System.Drawing.Size(100, 20);
+            this.tb_nd.Size = new System.Drawing.Size(56, 20);
             this.tb_nd.TabIndex = 0;
             this.tb_nd.TextChanged += new System.EventHandler(this.tb_nd_TextChanged);
             // 
@@ -84,9 +87,10 @@
             // 
             this.rbX86.AutoSize = true;
             this.rbX86.Checked = true;
-            this.rbX86.Location = new System.Drawing.Point(21, 38);
+            this.rbX86.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rbX86.Location = new System.Drawing.Point(21, 35);
             this.rbX86.Name = "rbX86";
-            this.rbX86.Size = new System.Drawing.Size(73, 17);
+            this.rbX86.Size = new System.Drawing.Size(84, 17);
             this.rbX86.TabIndex = 2;
             this.rbX86.TabStop = true;
             this.rbX86.Text = "Intel / x86";
@@ -96,9 +100,10 @@
             // rbARM
             // 
             this.rbARM.AutoSize = true;
-            this.rbARM.Location = new System.Drawing.Point(92, 38);
+            this.rbARM.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rbARM.Location = new System.Drawing.Point(106, 35);
             this.rbARM.Name = "rbARM";
-            this.rbARM.Size = new System.Drawing.Size(49, 17);
+            this.rbARM.Size = new System.Drawing.Size(52, 17);
             this.rbARM.TabIndex = 3;
             this.rbARM.Text = "ARM";
             this.rbARM.UseVisualStyleBackColor = true;
@@ -107,9 +112,10 @@
             // rbSPARC
             // 
             this.rbSPARC.AutoSize = true;
-            this.rbSPARC.Location = new System.Drawing.Point(145, 38);
+            this.rbSPARC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rbSPARC.Location = new System.Drawing.Point(156, 35);
             this.rbSPARC.Name = "rbSPARC";
-            this.rbSPARC.Size = new System.Drawing.Size(53, 17);
+            this.rbSPARC.Size = new System.Drawing.Size(58, 17);
             this.rbSPARC.TabIndex = 4;
             this.rbSPARC.Text = "Sparc";
             this.rbSPARC.UseVisualStyleBackColor = true;
@@ -117,7 +123,8 @@
             // 
             // nSnap
             // 
-            this.nSnap.Location = new System.Drawing.Point(317, 10);
+            this.nSnap.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nSnap.Location = new System.Drawing.Point(306, 10);
             this.nSnap.Name = "nSnap";
             this.nSnap.Size = new System.Drawing.Size(42, 20);
             this.nSnap.TabIndex = 1;
@@ -127,9 +134,10 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(232, 13);
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(211, 13);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(79, 13);
+            this.label2.Size = new System.Drawing.Size(93, 13);
             this.label2.TabIndex = 8;
             this.label2.Text = "Snapshot (GB):";
             // 
@@ -137,6 +145,7 @@
             // 
             this.tssl.AutoSize = true;
             this.tssl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tssl.ForeColor = System.Drawing.Color.Red;
             this.tssl.Location = new System.Drawing.Point(18, 58);
             this.tssl.Name = "tssl";
             this.tssl.Size = new System.Drawing.Size(26, 13);
@@ -145,6 +154,7 @@
             // 
             // button1
             // 
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.Location = new System.Drawing.Point(366, 10);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 20);
@@ -180,11 +190,23 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(219, 36);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(142, 17);
+            this.checkBox1.TabIndex = 13;
+            this.checkBox1.Text = "Show More #s from Calc";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(925, 577);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
@@ -226,6 +248,7 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ContextMenuStrip cms;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 

@@ -12,6 +12,9 @@ using System.Collections;
 using System.IO;
 using System.Reflection;
 using VolSizeCalc.Properties;
+//using Oyster.Math;
+
+
 
 namespace VolSizeCalc
 {
@@ -58,16 +61,37 @@ namespace VolSizeCalc
         double onediskgb0d, onedisktb0d;
         //
         bool torun ;
+        //
+        const double cfTBtoTB = 0.90949470177; //on google: 1000*1000*1000*1000/1024/1024/1024
+        const double cfGBtoGB = 0.93132257461; //on google: 1000*1000*1000/1024/1024/1024
        bool comparison_enabled = false;
-
+        private bool MoreInfo;
+        
         private const int fsizereg = 10;
 
         public Form1()
         {
             InitializeComponent();
         }
+        //private void 
         private void Form1_Load(object sender, EventArgs e)
         {
+           // double x = 3*1000*1000/1024/1024;//(10*(10*(10/10.2)/10.2)/10.2);
+           // cwl(x.ToString("0.000"));
+         
+
+//            IntX x ;
+          //  x = IntX.Multiply(3, 1000,MultiplyMode.Classic); //tb to gb
+//            x = IntX.Multiply(x, 1000, MultiplyMode.Classic); //gb to mg
+//            x = IntX.Multiply(x, 1000, MultiplyMode.Classic); //mb to kb
+//            x = IntX.Multiply(x, 1000, MultiplyMode.Classic); //mb to byte
+//            x = IntX.Divide(x, 1024, DivideMode.AutoNewton ); //back to kb
+//            x = IntX.Divide(x, 1024, DivideMode.AutoNewton); //back to mb
+//            x = IntX.Divide(x, 1024, DivideMode.AutoNewton); //back to gb
+          //  x = IntX.Divide(x, 1024, DivideMode.AutoNewton);  //back to tb
+//            cwl(x.ToString());
+
+
             this.Icon = Resources.ico1;
             torun = false;
             clear_baseline();
@@ -145,6 +169,22 @@ namespace VolSizeCalc
         }
         private void init_vars()
         {
+
+//            long x = 3; c // tb
+//            x *= 1000; // tb 2 gb
+//            x *= 1000; // gb 2 mb
+//            x *= 1000; // mb 2 
+//            x *= 1000;
+//            x /= 1024;
+//            //   x /= 1024;
+//            double y = Convert.ToDouble(x);
+//            y /= 1024;
+//            y /= 1024;
+//            y /= 1024*3;
+//            cwl(y.ToString());
+
+
+
             init_drives();
             // lots of the controls on screen are predefined with settings, i could of put it here but instead its in the Designer.cs. mostly TabIndex and whats checked in the radioboxes
             // make 1 good sized one and then make it disappear
@@ -230,7 +270,7 @@ namespace VolSizeCalc
             RichTextBox lbr = new RichTextBox();
             lbr.Name = "lbr";
             //  lbr.HorizontalScrollbar = true;
-            lbr.Size = new Size(sw - 25, 350); //used to be 390
+            lbr.Size = new Size(sw - 25, 280); //used to be 390 then 350 then 280
             lbr.Location = new Point(10, sh - 20);
             // lbr.ZoomFactor = 0.5;// convert.float(zoomfactor);
             lbr.Font = new Font(lbr.Font.FontFamily, fsizereg, lbr.Font.Style);
@@ -363,7 +403,7 @@ namespace VolSizeCalc
             }
             double osSize = 0;
             double swapSize = 0;
-           // double os_and_swap = 0;
+            // double os_and_swap = 0;
             int unused = 0;
             string stype = " ";
             string itm = "";
@@ -374,21 +414,37 @@ namespace VolSizeCalc
             double final10 = 0;
             double final2 = 0;
             int snapshot = Convert.ToInt16(nSnap.Value);
-            if (rbX86.Checked) { stype = "Intel / x86"; osSize = intel_os; swapSize = intel_swap; }
-            else if (rbARM.Checked) { stype = "Arm"; osSize = arm_os; swapSize = arm_swap; }
-            else if (rbSPARC.Checked) { stype = "Sparc"; osSize = sparc_os; swapSize = sparc_swap; }
+            if (rbX86.Checked)
+            {
+                stype = "Intel / x86";
+                osSize = intel_os;
+                swapSize = intel_swap;
+            }
+            else if (rbARM.Checked)
+            {
+                stype = "Arm";
+                osSize = arm_os;
+                swapSize = arm_swap;
+            }
+            else if (rbSPARC.Checked)
+            {
+                stype = "Sparc";
+                osSize = sparc_os;
+                swapSize = sparc_swap;
+            }
             //os_and_swap = osSize + swapSize;
 
-           // addline("Snapshot size [GB base 2]: " + snapshot);
-           //   addline("Architecture: " + stype.ToString());
+            // addline("Snapshot size [GB base 2]: " + snapshot);
+            //   addline("Architecture: " + stype.ToString());
             foreach (var item in this.Controls)
             {
-                r = -1; r1 = -1; //reset some variables
+                r = -1;
+                r1 = -1; //reset some variables
                 biggestdrive = "NOTHING"; //size10 = 0; //reset some variables
-                itm = ((Control)item).Name;
+                itm = ((Control) item).Name;
                 if ((itm.Contains("ata") & (itm.Contains("a0") == false) & (itm.Contains("lata") == false)))
                 {
-                    CheckedListBox.CheckedItemCollection ii = ((CheckedListBox)item).CheckedItems;
+                    CheckedListBox.CheckedItemCollection ii = ((CheckedListBox) item).CheckedItems;
                     if (ii.Count == 0)
                     {
                         ++unused;
@@ -398,12 +454,12 @@ namespace VolSizeCalc
                         biggestdrive = capd;
 
                     }
-                    r = ((CheckedListBox)item).CheckedIndices.Count; // how many drives are selected there
-                    r1 = ((CheckedListBox)item).Items.IndexOf(biggestdrive); //index of largest drive
+                    r = ((CheckedListBox) item).CheckedIndices.Count; // how many drives are selected there
+                    r1 = ((CheckedListBox) item).Items.IndexOf(biggestdrive); //index of largest drive
                     if (biggestdrive != "NOTHING") // found a drive **
                     {
                         r2 = Convert.ToDouble(biggestdrive.Substring(0, biggestdrive.IndexOf("GB")));
-                        ((CheckedListBox)item).SetSelected(r1, true);
+                        ((CheckedListBox) item).SetSelected(r1, true);
                         //NEW WAY
                         int ind = drives.IndexOf(r2);
                         hist[ind]++;
@@ -417,17 +473,17 @@ namespace VolSizeCalc
                     else
                     {
                         r2 = 0;
-                        ((CheckedListBox)item).SetSelected(0, false);
+                        ((CheckedListBox) item).SetSelected(0, false);
                     }
                     size10 += r2;
                 }
             }
             final10 = size10;
             //double cf;            // cf = (1000 ^ 3) / (1024 ^ 3) = 09.93132257461;
-            final2 = final10 * (1000 ^ 3) / (1024 ^ 3);
+            final2 = final10*cfGBtoGB;
             int used = numberofdrives - unused;
             double z10 = final10;
-            double z2=final2;
+            double z2 = final2;
             string ss = "";
             string se = "";
             double q10 = 0;
@@ -436,7 +492,9 @@ namespace VolSizeCalc
             double toraid5 = 0;
             double toraid6 = 0;
             double de, diffd;
-            double ds = 0; de = 0; diffd = 0;
+            double ds = 0;
+            de = 0;
+            diffd = 0;
             for (int c = 0; c < drivessize; c++)
             {
 
@@ -451,40 +509,59 @@ namespace VolSizeCalc
                 de = Convert.ToDouble(drives[c]);
                 diffd = de - ds;
                 //
-                if (c == 0) { ss = "0"; se = drives[c].ToString(); } else { ss = drives[c - 1].ToString(); se = drives[c].ToString(); }
+                if (c == 0)
+                {
+                    ss = "0";
+                    se = drives[c].ToString();
+                }
+                else
+                {
+                    ss = drives[c - 1].ToString();
+                    se = drives[c].ToString();
+                }
                 q = Convert.ToDouble(chist[c]);
-                q10 = q * diffd / 1000;
-                q2 = (q * diffd * 0.93132257461) / 1024;
+                q10 = q*diffd/1000;
+                q2 = (q*diffd*cfGBtoGB)/1024;
                 if ((chist5[c]) > 0) //if negative or zero dont count
                 {
-                    toraid5 += Convert.ToDouble(chist5[c]) * diffd;
+                    toraid5 += Convert.ToDouble(chist5[c])*diffd;
                 }
                 if ((chist6[c]) > 0) //if negative or zero dont count
                 {
-                    toraid6 += Convert.ToDouble(chist6[c]) * diffd;
+                    toraid6 += Convert.ToDouble(chist6[c])*diffd;
                 }
             }
-            double spaceR5Tb = toraid5 / 1000;
-            double spaceR6Tb = toraid6 / 1000;
+            double spaceR5Tb = toraid5/1000;
+            double spaceR6Tb = toraid6/1000;
             bool raid5 = false;
             bool raid6 = false;
-            if (toraid5 > 0) { raid5 = true; }
-            if (toraid6 > 0) { raid6 = true; }
-            double spaceR52 = toraid5 * 0.93132257461;
-            double spaceR62 = toraid6 * 0.93132257461;
-            double spaceR52Tb = spaceR52 / 1024;
-            double spaceR62Tb = spaceR62 / 1024;
-            double totalos = osSize * used;
-            double totalswap = swapSize * used;
+            if (toraid5 > 0)
+            {
+                raid5 = true;
+            }
+            if (toraid6 > 0)
+            {
+                raid6 = true;
+            }
+
+            double spaceR52 = toraid5*cfGBtoGB;
+            double spaceR52Tb = spaceR52/1024;
+            // cwl("GB: " + toraid5.ToString() + " --> " + spaceR52.ToString());
+            //  cwl("TB: " + spaceR5Tb.ToString() + " --> " + spaceR52Tb.ToString());
+
+            double spaceR62 = toraid6*cfGBtoGB;
+            double spaceR62Tb = spaceR62/1024;
+            double totalos = osSize*used;
+            double totalswap = swapSize*used;
             double totalosandswap = totalos + totalswap;
             double afteros5 = spaceR52 - totalosandswap;
             double afteros6 = spaceR62 - totalosandswap;
-            double afterOverhead5 = afteros5 * (1 - raid_overhead);
-            double afterOverhead6 = afteros6 * (1 - raid_overhead);
+            double afterOverhead5 = afteros5*(1 - raid_overhead);
+            double afterOverhead6 = afteros6*(1 - raid_overhead);
             double final5Gb = afterOverhead5 - snapshot;
             double final6Gb = afterOverhead6 - snapshot;
-            double final5Tb = final5Gb / 1024;
-            double final6Tb = final6Gb / 1024;
+            double final5Tb = final5Gb/1024;
+            double final6Tb = final6Gb/1024;
             if (raid5 == false)
             {
                 afteros5 = 0;
@@ -499,27 +576,35 @@ namespace VolSizeCalc
                 final6Gb = 0;
                 final6Tb = 0;
             }
-            double ro5 = afteros5 * raid_overhead;
-            double ro6 = afteros6 * raid_overhead;
+            double ro5 = afteros5*raid_overhead;
+            double ro6 = afteros6*raid_overhead;
             double osperdisk = osSize + swapSize;
             string pr5, pr6;
             pr5 = "NOT POSSIBLE";
             pr6 = "NOT POSSIBLE";
-            if (raid5 == true) { pr5 = "POSSIBLE"; }
-            if (raid6 == true) { pr6 = "POSSIBLE"; }
-            tssl.Text = "Disks: " + used.ToString() + ", Given Space: " + (final10 / 1000).ToString() + " TB, ";// + "Final R5: " + String.Format("{0:0.000}", finalfs5tb) + " TB,  Final R6: " + String.Format("{0:0.000}", finalfs6tb) + " TB";
+            if (raid5 == true)
+            {
+                pr5 = "POSSIBLE";
+            }
+            if (raid6 == true)
+            {
+                pr6 = "POSSIBLE";
+            }
+            tssl.Text = "Disks: " + used.ToString() + ", Given Space: " + (final10/1000).ToString() + " TB, ";
+                // + "Final R5: " + String.Format("{0:0.000}", finalfs5tb) + " TB,  Final R6: " + String.Format("{0:0.000}", finalfs6tb) + " TB";
             double onediskgb, onedisktb;
-            onediskgb=0;
-            onedisktb=0;
+            onediskgb = 0;
+            onedisktb = 0;
             if (used == 1)
             {
-                onediskgb = (final2 - totalosandswap) * (1 - raid_overhead) - snapshot;
-                onedisktb = onediskgb / 1024;
+                onediskgb = (final2 - totalosandswap)*(1 - raid_overhead) - snapshot;
+                onedisktb = onediskgb/1024;
                 tssl.Text += "FINAL VOLUME SIZE: " + String.Format("{0:0.000}", onedisktb) + " TB";
             }
             else
             {
-                tssl.Text += "FINAL R5: " + String.Format("{0:0.00}", final5Tb) + " TB, FINAL R6: " + String.Format("{0:0.00}", final6Tb) + " TB";
+                tssl.Text += "FINAL R5: " + String.Format("{0:0.00}", final5Tb) + " TB, FINAL R6: " +
+                             String.Format("{0:0.00}", final6Tb) + " TB";
             }
             if (torun == true)
             {
@@ -551,11 +636,11 @@ namespace VolSizeCalc
                 onedisktb0 = onedisktb;
                 cwl(architecture0 + "  tten:" + totalgb100.ToString() + "  f:" + z10.ToString() + "  o:" + onediskgb0);
             }
-           else 
+            else
             {
-               //difference
-                snapshot0d = snapshot-snapshot0;
-                drives0d = used-drives0;
+                //difference
+                snapshot0d = snapshot - snapshot0;
+                drives0d = used - drives0;
                 totalgb100d = z10 - totalgb100;
                 totalgb102d = z2 - totalgb102;
                 osper0d = osperdisk - osper0;
@@ -587,7 +672,11 @@ namespace VolSizeCalc
             addword("  ");
             addword_blue(snapshot0d.ToString());
             addnl();
-            addword_bold("Architecture: "); addword_bred(stype); addword("  "); addword_bblue(architecture0); addnl();
+            addword_bold("Architecture: ");
+            addword_bred(stype);
+            addword("  ");
+            addword_bblue(architecture0);
+            addnl();
             addword_bold("Used Drives: ");
             addword_bred(used.ToString()); //new
             addword("  ");
@@ -595,7 +684,7 @@ namespace VolSizeCalc
             addword("  ");
             addword_blue(drives0d.ToString()); //diff
             addnl();
-            addline("Raid Overhead: " + raid_overhead * 100 + "%");
+            addline("Raid Overhead: " + raid_overhead*100 + "%");
             addword("# of Drives -");
             for (int o = 0; o < drivessize; o++)
             {
@@ -603,45 +692,180 @@ namespace VolSizeCalc
                 {
                     addword(" ");
                 }
-                addword(drives[o].ToString() + "GB="); addword_bold(hist[o].ToString());
+                addword(drives[o].ToString() + "GB=");
+                addword_bold(hist[o].ToString());
                 if (o != (drivessize - 1))
                 {
                     addword(", ");
                 }
             }
             addnl();
-            addword_bold("Total Disk Size In Place [GB base 10]: "); addword_bred(String.Format("{0:0.000}", final10).ToString()); addword("  "); addword_bblue(String.Format("{0:0.000}", totalgb100).ToString()); addword("  "); addword_blue(String.Format("{0:0.000}", totalgb100d).ToString()); addnl();
-            addword_bold("Total Disk Size In Place [GB base 2]: "); addword_bred((String.Format("{0:0.000}", final2).ToString())); addword("  "); addword_bblue((String.Format("{0:0.000}", totalgb102).ToString())); addword("  "); addword_blue(String.Format("{0:0.000}", totalgb102d).ToString()); addnl();
-            for (int c = 0; c < drivessize; c++)
+            addword_bold("Total Disk Size In Place [GB base 10]: ");
+            addword_bred(String.Format("{0:0.000}", final10).ToString());
+            addword("  ");
+            addword_bblue(String.Format("{0:0.000}", totalgb100).ToString());
+            addword("  ");
+            addword_blue(String.Format("{0:0.000}", totalgb100d).ToString());
+            addnl();
+            addword_bold("Total Disk Size In Place [GB base 2]: ");
+            addword_bred((String.Format("{0:0.000}", final2).ToString()));
+            addword("  ");
+            addword_bblue((String.Format("{0:0.000}", totalgb102).ToString()));
+            addword("  ");
+            addword_blue(String.Format("{0:0.000}", totalgb102d).ToString());
+            addnl();
+            if (MoreInfo)
             {
 
-                if (c == 0)
+                for (int c = 0; c < drivessize; c++)
                 {
-                    ds = 0;
+
+                    if (c == 0)
+                    {
+                        ds = 0;
+                    }
+                    else
+                    {
+                        ds = Convert.ToDouble(drives[c - 1]);
+                    }
+                    de = Convert.ToDouble(drives[c]);
+                    diffd = de - ds;
+                    //
+                    if (c == 0)
+                    {
+                        ss = "0";
+                        se = drives[c].ToString();
+                    }
+                    else
+                    {
+                        ss = drives[c - 1].ToString();
+                        se = drives[c].ToString();
+                    }
+                    q = Convert.ToDouble(chist[c]);
+                    q10 = q*diffd/1000;
+                    q2 = (q*diffd*0.93132257461)/1024;
+                    addline(ss + "-" + se + " Chunks:" + q.ToString() + " ---> Chunk Space base-two: " +
+                            String.Format("{0:0.000}", q10) + " TB --- base-ten: " + String.Format("{0:0.000}", q2) +
+                            " TB");
                 }
-                else
-                {
-                    ds = Convert.ToDouble(drives[c - 1]);
-                }
-                de = Convert.ToDouble(drives[c]);
-                diffd = de - ds;
-                //
-                if (c == 0) { ss = "0"; se = drives[c].ToString(); } else { ss = drives[c - 1].ToString(); se = drives[c].ToString(); }
-                q = Convert.ToDouble(chist[c]);
-                q10 = q * diffd / 1000;
-                q2 = (q * diffd * 0.93132257461) / 1024;
-                 addline(ss + "-" + se + " Chunks:" + q.ToString() + " ---> Chunk Space base-two: " + String.Format("{0:0.000}", q10) + " TB --- base-ten: " + String.Format("{0:0.000}", q2) + " TB");
             }
+
             //addline("Space Allotted in Base 10 - Raid5: " + String.Format("{0:0}", toraid5) + " GB, Raid6: " + String.Format("{0:0}", toraid6) + " GB");
             addline("Space Allotted in Base 10 - Raid5: " + String.Format("{0:0.000}", spaceR5Tb) + " TB, Raid6: " + String.Format("{0:0.000}", spaceR6Tb) + " TB");
             //addline("Space Allotted in Base 2 - Raid5: " + String.Format("{0:0}", spaceR5_2) + " GB, Raid6: " + String.Format("{0:0}", spaceR6_2) + " GB");
             addline("Space Allotted in Base 2 - Raid5: " + String.Format("{0:0.000}", spaceR52Tb) + " TB, Raid6: " + String.Format("{0:0.000}", spaceR62Tb) + " TB");
             addline_italic("NOTE: Every size value below is in base 2, 'real space'");
-            addline("OS & SWAP will take up " + String.Format("{0:0.000}", osperdisk) + " GB/Disk on " + used + " Disks, Totaling: " + String.Format("{0:0.000}", totalosandswap));
-            addline("The raidover head at " + raid_overhead * 100 + "% will cost - Raid5: " + String.Format("{0:0}", ro5) + " GB Raid6: " + String.Format("{0:0}", ro6) + " GB");
-            addline("After OS & SWAP - Raid5: " + String.Format("{0:0.000}", afteros5) + " GB, Raid6: " + String.Format("{0:0.000}", afteros6) + " GB");
-            addline("After Overhead  - Raid5: " + String.Format("{0:0.000}", afterOverhead5) + " GB, Raid6: " + String.Format("{0:0.000}", afterOverhead6) + " GB");
-            addline("After Snapshot  - Raid5: " + String.Format("{0:0.000}", final5Gb) + " GB, Raid6: " + String.Format("{0:0.000}", final6Gb) + " GB = FINAL VALUES");
+            if (MoreInfo)
+            {
+//                addline("OS & SWAP will take up " + String.Format("{0:0.000}", osperdisk) + " GB/Disk on " + used +
+//                        " Disks, Totaling: " + String.Format("{0:0.000}", totalosandswap));
+//                addline("The raidover head at " + raid_overhead*100 + "% will cost - Raid5: " +
+//                        String.Format("{0:0}", ro5) + " GB Raid6: " + String.Format("{0:0}", ro6) + " GB");
+//                addline("After OS & SWAP - Raid5: " + String.Format("{0:0.000}", afteros5) + " GB, Raid6: " +
+//                        String.Format("{0:0.000}", afteros6) + " GB");
+//                addline("After Overhead  - Raid5: " + String.Format("{0:0.000}", afterOverhead5) + " GB, Raid6: " +
+//                        String.Format("{0:0.000}", afterOverhead6) + " GB");
+//                addline("After Snapshot  - Raid5: " + String.Format("{0:0.000}", final5Gb) + " GB, Raid6: " +
+//                        String.Format("{0:0.000}", final6Gb) + " GB = FINAL VALUES");
+
+
+                addword_bold("OS & SWAP "); addword(" will take up ");
+                addword_bred( String.Format("{0:0.000}", osperdisk)+ " GB/Disk");
+                addword(" on ");
+                addword_bred(used + " Disks" );
+                addword_bold(", Totaling: ");
+                addword_bred(String.Format("{0:0.000}", totalosandswap));
+                addnl();
+
+
+
+
+               
+                addword_bold("Raid Overhead ");
+                   addword(          "at ");
+
+
+
+                addword_bred(String.Format("{0:0.0}", raid_overhead*100) + "%");
+
+
+                addword(" will cost ");
+                            
+
+                     addword_bold(        "- Raid5: "); 
+
+
+
+                addword_bred(String.Format("{0:0}", ro5)+ " GB");
+                addword_bold(", Raid6: ");
+                addword_bred(String.Format("{0:0}", ro6) + " GB");
+                addnl();
+
+
+
+
+                addline_underline("After");
+                addword_bold(" OS & SWAP");
+                addword(" - ");
+                addword_bold ("Raid5: "); 
+
+
+
+
+                addword_bred(String.Format("{0:0.000}", afteros5)+ " GB");
+                addword_bold(", Raid6: " );
+                addword_bred(String.Format("{0:0.000}", afteros6) + " GB"); 
+                addnl();
+
+
+
+
+                addline_underline("After ");
+                     addword_bold("Raid Overhead ");
+                      addword(" - ");
+                      addword_bold("Raid5: "); 
+
+
+
+                addword_bred(String.Format("{0:0.000}", afterOverhead5) +  " GB");
+                addword_bold(", Raid6: ");
+              addword_bred(String.Format("{0:0.000}", afterOverhead6) + " GB");
+                addnl();
+
+
+
+
+                addline_underline("After ");
+                addword_bold("Snapshot ");
+                addword(" - ");
+                addword_bold("Raid5: "); 
+
+
+
+
+                addword_bred(String.Format("{0:0.000}", final5Gb)  + " GB");
+                addword_bold(", Raid6: ");
+                addword_bred( String.Format("{0:0.000}", final6Gb)  + " GB");
+             addword_bold(" = FINAL VALUES");
+                 addnl();
+            }
+            else
+            {
+               // addline(string.Format("Other factors - Os+Swap: {0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap,ro5,ro6,snapshot));
+                addword(string.Format("Other factors - ")); //"Os+Swap: {0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap, ro5, ro6, snapshot));
+                addword_bold(string.Format("Os&Swap: ")); //"{0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap, ro5, ro6, snapshot));
+                addword_bred(string.Format("{0:0.000}", totalosandswap));
+                addword(string.Format(" - "));
+                addword_bold(string.Format("R5/R6 Overhead: ")); 
+                addword_bred(string.Format("{0:0.0}", ro5));
+                addword(string.Format("/"));
+                addword_bred(string.Format("{0:0.0}", ro6));
+                addword(string.Format(" - "));
+                addword_bold(string.Format("Snapshot: ")); 
+                addword_bred(string.Format("{0:0}", snapshot));
+                addnl();
+                //addword(string.Format("Other factors - Os+Swap: {0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap, ro5, ro6, snapshot));
+            }
             addline_italic("RAID5: " + pr5 + " - RAID6: " + pr6);
             if (used != 1)
             {
@@ -940,6 +1164,28 @@ namespace VolSizeCalc
             }
         }
 
+
+        private void addline_underline(string str)
+        {
+            string itm;
+            int before, after, lengthh;
+            foreach (var item in this.Controls)
+            {
+                itm = ((Control)item).Name;
+                if (itm == "lbr")
+                {
+                    before = ((RichTextBox)item).Text.Length;
+                    ((RichTextBox)item).AppendText(str);
+                    after = ((RichTextBox)item).Text.Length;
+                    lengthh = after - before;
+                    ((RichTextBox)item).Select(before, lengthh);
+                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Underline );
+                    ((RichTextBox)item).Select(after, 0);
+                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Regular);
+                }
+            }
+        }
+
         private void removelines()
         {
             string itm;
@@ -1097,6 +1343,12 @@ namespace VolSizeCalc
            // clear_baseline();
             torun = true;
             premakeall();
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            MoreInfo = checkBox1.Checked;
+            calc(true);
         }
     }
 }
