@@ -146,6 +146,34 @@
     <value>What size of drive would you like to add? [Gigabytes in base 10, drive manufacturer units]</value>
   </data>
   <data name="HelpMessage" xml:space="preserve">
+    <value>=== Welcome to XRaid Calculator, By: Kostia ===
+
+This is strictly just educational only. However I have made the numbers come out pretty close to the actual values (+- 1% error).
+
+--How to use?--
+First select how many drives you can put in basically its the number of slots in the system. You do not have to fill up all the slots. You can have a max of 60 slots/drives. Then select the architecture of the chip (whether its Sparc, Intel or ARM based). Then select the snapshot you wish to assign for snapshot backups. Finally pick the drives in the system.
+
+--How to read results--
+The results that matter are highlighted with yellow and bold red text.
+The blue and red color coding is for comparing different drive layout scenarios.
+
+--Comparing---
+Select a scenerio for example Intel unit, 100GB Snapshot, four 2TB drives and your wondering how much bigger the volume would be If you upgraded to all 3 TB drives. Just select that scenario and then hit the SET BASELINE button and then select all 3TB drives. Now look at the numbers. The Bold red is the current values with the 3TB drives, The Bold blue is the old values with the 2TB drives. The light blue is the differences and the percent change.
+
+--Need another drive size?--
+By default your given the sizes 500,750,1000,1500,2000, and 3000 GB. Those values are the commericial Gigabytes used by drive manufacturer (they are base 10). Hence in a real world scenerio you get much less by a factor of about 93%. You can put in different drive sizes and take away different drive sizes, just right click in any of the drive boxs and follow the options. If I wanted to add a 4 TB drive to all slots, I would right click in any of the drive boxes and hit ADD DRIVE then I would type in 4000 and hit enter.
+
+--Whats different between this and "real life" real-world READYNAS?--
+**WARNING** (1) Time independence:
+This program is time independent meaning it does not care about the chronological order that you add or remove drives. In real-life each system preforms under its very own characteristics when drives are added and does depend on time(in a way), for example one rule that doesnt get exercised in this program but applies in real world Readynas: If your first drive was a 2 TB drive, and then you add a smaller drive, The expansion wouldnt work.
+
+**WARNING** (2) Drive size limitations:
+With Sparc units, Intel units prior to and including 4.2.15 you cannot have drives bigger than 2 TBs. They will simply not work or will just be recognized as 2 TB drives. So a four 3TB drives is equivalent to having four 2TB drives on firmware 4.2.15. To take advantage of the full size: Please backup your data, update to the newest firmware (so 4.2.16 and higher) and prefarbly factory default with the big drives in place and when done copy your backed up data back over.
+
+**WARNING** (3) Limitations of recent Intel units:
+Volume expansion will not work beyond 16 TB. To support 16 TB or greater, you’ll have to factory default with that capacity in place.</value>
+  </data>
+  <data name="HelpMessage1" xml:space="preserve">
     <value>NOTE: Look at the BOLD RED NUMBERS FOR THE CURRENT VALUE The numbers here are based on a calculation and may vary in the actual system. Also note this program is time independent meaning it does not care about the chronological order that you add or remove drives. In real-life each system preforms under its very own characteristics when drives are added and does depend on time(in a way), for example: if your first drive was a 2TB drive, I would not be able to add smaller drives there after to expand. So hence, each calculation is as if you have factory defaulted and built an XRAID system out of the drives that you have selected. Other factors determine what final size your system will be. Also you can change the number of drives, please put in integer values, (however decimal point values can be used). You cant add more than 60 different kinds, and also you cannot go below 1 kind of drive. I just added the ability to compare different setups. You can start a comparison with the SET BASELINEbutton, clicking that will put the current values into the blue position and then from then own every new value will be in red. The none bold blue is the difference from current to new. Regards, Kostia Khlebopros of NETGEAR.</value>
   </data>
 </root>
