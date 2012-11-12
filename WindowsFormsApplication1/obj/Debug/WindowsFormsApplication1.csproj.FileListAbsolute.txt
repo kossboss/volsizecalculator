@@ -1,0 +1,9 @@
+C:\Users\kkhlebopros\0Files\Projects\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.csprojResolveAssemblyReference.cache
+C:\Users\kkhlebopros\0Files\Projects\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Form1.resources
+C:\Users\kkhlebopros\0Files\Projects\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.csproj.GenerateResource.Cache
+C:\Users\kkhlebopros\0Files\Projects\WindowsFormsApplication1\WindowsFormsApplication1\bin\Debug\VolSizeCalc.exe.config
+C:\Users\kkhlebopros\0Files\Projects\WindowsFormsApplication1\WindowsFormsApplication1\bin\Debug\VolSizeCalc.exe
+C:\Users\kkhlebopros\0Files\Projects\WindowsFormsApplication1\WindowsFormsApplication1\bin\Debug\VolSizeCalc.pdb
+C:\Users\kkhlebopros\0Files\Projects\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\VolSizeCalc.Properties.Resources.resources
+C:\Users\kkhlebopros\0Files\Projects\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\VolSizeCalc.exe
+C:\Users\kkhlebopros\0Files\Projects\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\VolSizeCalc.pdb
