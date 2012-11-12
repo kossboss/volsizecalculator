@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VolSizeCalc.Properties;
 
 namespace VolSizeCalc
 {
@@ -27,6 +28,7 @@ namespace VolSizeCalc
 
         private void Form2_Load(object sender, EventArgs e)
         {
+            this.Icon = Resources.ico1;
             apply = false;
             this.KeyPreview = true;
            // bapp.Select();

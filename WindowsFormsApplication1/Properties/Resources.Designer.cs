@@ -61,12 +61,93 @@ namespace VolSizeCalc.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ADD DRIVE SIZE.
+        /// </summary>
+        internal static string AddDriveSize {
+            get {
+                return ResourceManager.GetString("AddDriveSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cant add more than 60 different sizes of drives..
+        /// </summary>
+        internal static string CantAddMore {
+            get {
+                return ResourceManager.GetString("CantAddMore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to default the drive size entries to default?.
+        /// </summary>
+        internal static string DefautMessage {
+            get {
+                return ResourceManager.GetString("DefautMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DELETE DRIVE SIZE.
+        /// </summary>
+        internal static string DeleteDriveSize {
+            get {
+                return ResourceManager.GetString("DeleteDriveSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NOTE: The numbers here are based on a calculation and may vary in the actual system. Also note this program is time independent meaning it does not care about the chronological order that you add or remove drives. In real-life each system preforms under its very own characteristics when drives are added and does depend on time(in a way), for example: if your first drive was a 2TB drive, I would not be able to add smaller drives there after to expand. So hence, each calculation is as if you have factory defa [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string HelpMessage {
+            get {
+                return ResourceManager.GetString("HelpMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon ico1 {
             get {
                 object obj = ResourceManager.GetObject("ico1", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to That is an invalid drive size. Just write the number in GB without the unit. So if it was 750 GB drive. I would just write 750..
+        /// </summary>
+        internal static string InvalidDriveSize {
+            get {
+                return ResourceManager.GetString("InvalidDriveSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Got to have at least 1 drive size on the screen..
+        /// </summary>
+        internal static string NeedAtLeast1Drive {
+            get {
+                return ResourceManager.GetString("NeedAtLeast1Drive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What size of drive would you like to add? [Gigabytes in base 10, drive manufacturer units].
+        /// </summary>
+        internal static string WhatToAdd {
+            get {
+                return ResourceManager.GetString("WhatToAdd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What drive would you like to delete? [Just write the GB size of the drive, so if had a 4000 GB drive I would just type 4000].
+        /// </summary>
+        internal static string WhatToDelete {
+            get {
+                return ResourceManager.GetString("WhatToDelete", resourceCulture);
             }
         }
     }
