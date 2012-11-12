@@ -97,12 +97,12 @@ namespace VolSizeCalc.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to === Welcome to XRaid Calculator, By: Kostia ===
+        ///   Looks up a localized string similar to === Welcome to XRaid Calculator, By: kossboss ===
         ///
         ///This is strictly just educational only. However I have made the numbers come out pretty close to the actual values (+- 1% error).
         ///
         ///--How to use?--
-        ///First select how many drives you can put in basically its the number of slots in the system. You do not have to fill up all the slots. You can have a max of 60 slots/drives. Then select the architecture of the chip (whether its Sparc, Intel or ARM based). Then select the snapshot you wish to assign for snapsho [rest of string was truncated]&quot;;.
+        ///First select how many drives you can put in basically its the number of slots in the system. You do not have to fill up all the slots. You can have a max of 60 slots/drives. Then select the architecture of the chip (whether its Sparc, Intel or ARM based). Then select the snapshot you wish to assign for snaps [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HelpMessage {
             get {
@@ -162,6 +162,24 @@ namespace VolSizeCalc.Properties {
         internal static string WhatToDelete {
             get {
                 return ResourceManager.GetString("WhatToDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What drive would you like to select across all of the drive bays? [Just write the GB size of the drive, so if had a 4000 GB drive I would just type 4000].
+        /// </summary>
+        internal static string WhatToSelect {
+            get {
+                return ResourceManager.GetString("WhatToSelect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DRIVE SELECTION.
+        /// </summary>
+        internal static string WhatToSelectTitle {
+            get {
+                return ResourceManager.GetString("WhatToSelectTitle", resourceCulture);
             }
         }
     }

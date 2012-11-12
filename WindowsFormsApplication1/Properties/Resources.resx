@@ -146,12 +146,12 @@
     <value>What size of drive would you like to add? [Gigabytes in base 10, drive manufacturer units]</value>
   </data>
   <data name="HelpMessage" xml:space="preserve">
-    <value>=== Welcome to XRaid Calculator, By: Kostia ===
+    <value>=== Welcome to XRaid Calculator, By: kossboss ===
 
 This is strictly just educational only. However I have made the numbers come out pretty close to the actual values (+- 1% error).
 
 --How to use?--
-First select how many drives you can put in basically its the number of slots in the system. You do not have to fill up all the slots. You can have a max of 60 slots/drives. Then select the architecture of the chip (whether its Sparc, Intel or ARM based). Then select the snapshot you wish to assign for snapshot backups. Finally pick the drives in the system.
+First select how many drives you can put in basically its the number of slots in the system. You do not have to fill up all the slots. You can have a max of 60 slots/drives. Then select the architecture of the chip (whether its Sparc, Intel or ARM based). Then select the snapshot you wish to assign for snapshot backups. Finally pick the drives in the system. Also you can clear your selection by right clicking in a one of the drive checkbox lists and selecting Clear Selection. You can also right click in the checkbox list and click on "Select All" and have it help you select a certain drive size across all the disks.
 
 --How to read results--
 The results that matter are highlighted with yellow and bold red text.
@@ -171,9 +171,21 @@ This program is time independent meaning it does not care about the chronologica
 With Sparc units, Intel units prior to and including 4.2.15 you cannot have drives bigger than 2 TBs. They will simply not work or will just be recognized as 2 TB drives. So a four 3TB drives is equivalent to having four 2TB drives on firmware 4.2.15. To take advantage of the full size: Please backup your data, update to the newest firmware (so 4.2.16 and higher) and prefarbly factory default with the big drives in place and when done copy your backed up data back over.
 
 **WARNING** (3) Limitations of recent Intel units:
-Volume expansion will not work beyond 16 TB. To support 16 TB or greater, you’ll have to factory default with that capacity in place.</value>
+Volume expansion will not work beyond 16 TB. To support 16 TB or greater, you’ll have to factory default with that capacity in place.
+
+**WARNING** (4) What values to read?
+When you have 1 disk - it give you just one value which is RAID 0.
+When you have 2 disk - read the RAID 5 value (it also represents the RAID 1 value)
+When you have 3 disk - read the RAID 5 value, however RAID 6 does give a correct but theoretical value.
+When you have 4+ disks - both values work.</value>
   </data>
   <data name="HelpMessage1" xml:space="preserve">
     <value>NOTE: Look at the BOLD RED NUMBERS FOR THE CURRENT VALUE The numbers here are based on a calculation and may vary in the actual system. Also note this program is time independent meaning it does not care about the chronological order that you add or remove drives. In real-life each system preforms under its very own characteristics when drives are added and does depend on time(in a way), for example: if your first drive was a 2TB drive, I would not be able to add smaller drives there after to expand. So hence, each calculation is as if you have factory defaulted and built an XRAID system out of the drives that you have selected. Other factors determine what final size your system will be. Also you can change the number of drives, please put in integer values, (however decimal point values can be used). You cant add more than 60 different kinds, and also you cannot go below 1 kind of drive. I just added the ability to compare different setups. You can start a comparison with the SET BASELINEbutton, clicking that will put the current values into the blue position and then from then own every new value will be in red. The none bold blue is the difference from current to new. Regards, Kostia Khlebopros of NETGEAR.</value>
+  </data>
+  <data name="WhatToSelect" xml:space="preserve">
+    <value>What drive would you like to select across all of the drive bays? [Just write the GB size of the drive, so if had a 4000 GB drive I would just type 4000]</value>
+  </data>
+  <data name="WhatToSelectTitle" xml:space="preserve">
+    <value>DRIVE SELECTION</value>
   </data>
 </root>

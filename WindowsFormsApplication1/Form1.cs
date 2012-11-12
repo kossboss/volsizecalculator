@@ -60,39 +60,27 @@ namespace VolSizeCalc
         double final5gb0d, final6gb0d, final5tb0d, final6tb0d;
         double onediskgb0d, onedisktb0d;
         //
-        bool torun ;
+        bool torun;
         //
         const double cfTBtoTB = 0.90949470177; //on google: 1000*1000*1000*1000/1024/1024/1024
         const double cfGBtoGB = 0.93132257461; //on google: 1000*1000*1000/1024/1024/1024
-       bool comparison_enabled = true;
+        bool comparison_enabled = true;
         private bool comparision1st = false;
         private bool MoreInfo;
-        
+
         private const int fsizereg = 10;
+
+        private bool original_is_one_disk = false;
+        private double correctional1 = 1.01594;
+        private double correctional5 = 1.01594;
+        private double correctional6 = 1.01594;
 
         public Form1()
         {
             InitializeComponent();
         }
-        //private void 
         private void Form1_Load(object sender, EventArgs e)
         {
-           // double x = 3*1000*1000/1024/1024;//(10*(10*(10/10.2)/10.2)/10.2);
-           // cwl(x.ToString("0.000"));
-         
-
-//            IntX x ;
-          //  x = IntX.Multiply(3, 1000,MultiplyMode.Classic); //tb to gb
-//            x = IntX.Multiply(x, 1000, MultiplyMode.Classic); //gb to mg
-//            x = IntX.Multiply(x, 1000, MultiplyMode.Classic); //mb to kb
-//            x = IntX.Multiply(x, 1000, MultiplyMode.Classic); //mb to byte
-//            x = IntX.Divide(x, 1024, DivideMode.AutoNewton ); //back to kb
-//            x = IntX.Divide(x, 1024, DivideMode.AutoNewton); //back to mb
-//            x = IntX.Divide(x, 1024, DivideMode.AutoNewton); //back to gb
-          //  x = IntX.Divide(x, 1024, DivideMode.AutoNewton);  //back to tb
-//            cwl(x.ToString());
-
-
             this.Icon = Resources.ico1;
             torun = false;
             clear_baseline();
@@ -130,15 +118,15 @@ namespace VolSizeCalc
             final6tb0 = 0;
             onediskgb0 = 0;
             onedisktb0 = 0;
-//            MessageBox.Show("Cleared");
+            //            MessageBox.Show("Cleared");
             //difference
             clear_diffs();
             //key is to calculate the difference before setting the new 0
             //forgot
-            afteros50 =0; 
-           
-            afteros60=0 ; 
-          
+            afteros50 = 0;
+
+            afteros60 = 0;
+
         }
         private void clear_diffs()
         {
@@ -161,7 +149,7 @@ namespace VolSizeCalc
             onediskgb0d = 0;
             onedisktb0d = 0;
             afteros60d = 0;
-             afteros50d=0;
+            afteros50d = 0;
         }
 
         private void init_drives()
@@ -177,22 +165,6 @@ namespace VolSizeCalc
         }
         private void init_vars()
         {
-
-//            long x = 3; c // tb
-//            x *= 1000; // tb 2 gb
-//            x *= 1000; // gb 2 mb
-//            x *= 1000; // mb 2 
-//            x *= 1000;
-//            x /= 1024;
-//            //   x /= 1024;
-//            double y = Convert.ToDouble(x);
-//            y /= 1024;
-//            y /= 1024;
-//            y /= 1024*3;
-//            cwl(y.ToString());
-
-
-
             init_drives();
             // lots of the controls on screen are predefined with settings, i could of put it here but instead its in the Designer.cs. mostly TabIndex and whats checked in the radioboxes
             // make 1 good sized one and then make it disappear
@@ -222,6 +194,9 @@ namespace VolSizeCalc
             lata0.Visible = false;
 
             // cms.Items.Add("Add Drive size");
+            cms.Items.Add("Clear Selection");
+            cms.Items.Add("Select All");
+            cms.Items.Add("--------------");
             cms.Items.Add("Add Drive Size");
             cms.Items.Add("Remove Drive Size");
             cms.Items.Add("DEFAULT");
@@ -399,6 +374,11 @@ namespace VolSizeCalc
         }
         private void actualcalc()
         {
+            double six_to_one = 0;
+            double five_to_one = 0;
+
+            double six_to_one_percent = 0;
+            double five_to_one_percent = 0;
             int drivessize = drives.Count;
             int[] hist = new int[drivessize];
             int[] chist = new int[drivessize];
@@ -451,10 +431,10 @@ namespace VolSizeCalc
                 r = -1;
                 r1 = -1; //reset some variables
                 biggestdrive = "NOTHING"; //size10 = 0; //reset some variables
-                itm = ((Control) item).Name;
+                itm = ((Control)item).Name;
                 if ((itm.Contains("ata") & (itm.Contains("a0") == false) & (itm.Contains("lata") == false)))
                 {
-                    CheckedListBox.CheckedItemCollection ii = ((CheckedListBox) item).CheckedItems;
+                    CheckedListBox.CheckedItemCollection ii = ((CheckedListBox)item).CheckedItems;
                     if (ii.Count == 0)
                     {
                         ++unused;
@@ -464,12 +444,12 @@ namespace VolSizeCalc
                         biggestdrive = capd;
 
                     }
-                    r = ((CheckedListBox) item).CheckedIndices.Count; // how many drives are selected there
-                    r1 = ((CheckedListBox) item).Items.IndexOf(biggestdrive); //index of largest drive
+                    r = ((CheckedListBox)item).CheckedIndices.Count; // how many drives are selected there
+                    r1 = ((CheckedListBox)item).Items.IndexOf(biggestdrive); //index of largest drive
                     if (biggestdrive != "NOTHING") // found a drive **
                     {
                         r2 = Convert.ToDouble(biggestdrive.Substring(0, biggestdrive.IndexOf("GB")));
-                        ((CheckedListBox) item).SetSelected(r1, true);
+                        ((CheckedListBox)item).SetSelected(r1, true);
                         //NEW WAY
                         int ind = drives.IndexOf(r2);
                         hist[ind]++;
@@ -483,14 +463,14 @@ namespace VolSizeCalc
                     else
                     {
                         r2 = 0;
-                        ((CheckedListBox) item).SetSelected(0, false);
+                        ((CheckedListBox)item).SetSelected(0, false);
                     }
                     size10 += r2;
                 }
             }
             final10 = size10;
             //double cf;            // cf = (1000 ^ 3) / (1024 ^ 3) = 09.93132257461;
-            final2 = final10*cfGBtoGB;
+            final2 = final10 * cfGBtoGB;
             int used = numberofdrives - unused;
             double z10 = final10;
             double z2 = final2;
@@ -530,19 +510,19 @@ namespace VolSizeCalc
                     se = drives[c].ToString();
                 }
                 q = Convert.ToDouble(chist[c]);
-                q10 = q*diffd/1000;
-                q2 = (q*diffd*cfGBtoGB)/1024;
+                q10 = q * diffd / 1000;
+                q2 = (q * diffd * cfGBtoGB) / 1024;
                 if ((chist5[c]) > 0) //if negative or zero dont count
                 {
-                    toraid5 += Convert.ToDouble(chist5[c])*diffd;
+                    toraid5 += Convert.ToDouble(chist5[c]) * diffd;
                 }
                 if ((chist6[c]) > 0) //if negative or zero dont count
                 {
-                    toraid6 += Convert.ToDouble(chist6[c])*diffd;
+                    toraid6 += Convert.ToDouble(chist6[c]) * diffd;
                 }
             }
-            double spaceR5Tb = toraid5/1000;
-            double spaceR6Tb = toraid6/1000;
+            double spaceR5Tb = toraid5 / 1000;
+            double spaceR6Tb = toraid6 / 1000;
             bool raid5 = false;
             bool raid6 = false;
             if (toraid5 > 0)
@@ -554,24 +534,24 @@ namespace VolSizeCalc
                 raid6 = true;
             }
 
-            double spaceR52 = toraid5*cfGBtoGB;
-            double spaceR52Tb = spaceR52/1024;
+            double spaceR52 = toraid5 * cfGBtoGB;
+            double spaceR52Tb = spaceR52 / 1024;
             // cwl("GB: " + toraid5.ToString() + " --> " + spaceR52.ToString());
             //  cwl("TB: " + spaceR5Tb.ToString() + " --> " + spaceR52Tb.ToString());
 
-            double spaceR62 = toraid6*cfGBtoGB;
-            double spaceR62Tb = spaceR62/1024;
-            double totalos = osSize*used;
-            double totalswap = swapSize*used;
+            double spaceR62 = toraid6 * cfGBtoGB;
+            double spaceR62Tb = spaceR62 / 1024;
+            double totalos = osSize * used;
+            double totalswap = swapSize * used;
             double totalosandswap = totalos + totalswap;
             double afteros5 = spaceR52 - totalosandswap;
             double afteros6 = spaceR62 - totalosandswap;
-            double afterOverhead5 = afteros5*(1 - raid_overhead);
-            double afterOverhead6 = afteros6*(1 - raid_overhead);
-            double final5Gb = afterOverhead5 - snapshot;
-            double final6Gb = afterOverhead6 - snapshot;
-            double final5Tb = final5Gb/1024;
-            double final6Tb = final6Gb/1024;
+            double afterOverhead5 = afteros5 * (1 - raid_overhead);
+            double afterOverhead6 = afteros6 * (1 - raid_overhead);
+            double final5Gb = (afterOverhead5 - snapshot) * correctional5;
+            double final6Gb = (afterOverhead6 - snapshot) * correctional6;
+            double final5Tb = (final5Gb / 1024) * correctional5;
+            double final6Tb = (final6Gb / 1024) * correctional6;
             if (raid5 == false)
             {
                 afteros5 = 0;
@@ -586,8 +566,8 @@ namespace VolSizeCalc
                 final6Gb = 0;
                 final6Tb = 0;
             }
-            double ro5 = afteros5*raid_overhead;
-            double ro6 = afteros6*raid_overhead;
+            double ro5 = afteros5 * raid_overhead;
+            double ro6 = afteros6 * raid_overhead;
             double osperdisk = osSize + swapSize;
             string pr5, pr6;
             pr5 = "NOT POSSIBLE";
@@ -600,15 +580,44 @@ namespace VolSizeCalc
             {
                 pr6 = "POSSIBLE";
             }
-            tssl.Text = "Disks: " + used.ToString() + ", Given Space: " + (final10/1000).ToString() + " TB, ";
-                // + "Final R5: " + String.Format("{0:0.000}", finalfs5tb) + " TB,  Final R6: " + String.Format("{0:0.000}", finalfs6tb) + " TB";
+            tssl.Text = "Disks: " + used.ToString() + ", Given Space: " + (final10 / 1000).ToString() + " TB, ";
+            // + "Final R5: " + String.Format("{0:0.000}", finalfs5tb) + " TB,  Final R6: " + String.Format("{0:0.000}", finalfs6tb) + " TB";
             double onediskgb, onedisktb;
             onediskgb = 0;
             onedisktb = 0;
+            // TEST
+            //////////////////////////////////////// 1.6 fix DECIDED THIS IS NOT SUPPORTED
+            bool showanotherline = false;
+            if (drives0 > 1 && used == 1)
+            {
+
+                // onediskgb0=final5gb0;
+
+                //   onediskgb05 = final5gb0;
+                //  onedisktb06 = final6tb0;
+               // cwl("WTF WTF WTF WTF!!! HEY HEY");
+                showanotherline = true;
+                //  onedisktb0 = final6tb0;
+
+                // final5gb0 = onediskgb0; 
+                //final6gb0 = onediskgb0; 
+                // final5tb0 = onedisktb0; 
+                // final6tb0 = onedisktb0; 
+                // original_is_one_disk = true;
+            }
+
+            //
+
+
+
+
+
+
+
             if (used == 1)
             {
-                onediskgb = ((final2 - totalosandswap)*(1 - raid_overhead) - snapshot) * (1.01594); // factor of 1.0.1594 was calculated during call
-
+                onediskgb = ((final2 - totalosandswap) * (1 - raid_overhead) - snapshot) * correctional1; // factor of 1.0.1594 was calculated during call
+                // correctional factor =(1.01594);
                 // before that factor
                 //                ===WITH 1 DISK===
                 //0.887 TB    <- my calc 1 
@@ -624,7 +633,7 @@ namespace VolSizeCalc
                 //:ADJUST MY CALC BY:
                 //My value * 1.01594 = real value
 
-                onedisktb = onediskgb/1024;
+                onedisktb = onediskgb / 1024;
                 tssl.Text += "FINAL VOLUME SIZE: " + String.Format("{0:0.000}", onedisktb) + " TB";
             }
             else
@@ -658,43 +667,78 @@ namespace VolSizeCalc
                 final6gb0 = final6Gb;
                 final5tb0 = final5Tb;
                 final6tb0 = final6Tb;
+
                 onediskgb0 = onediskgb;
                 onedisktb0 = onedisktb;
-                cwl(architecture0 + "  tten:" + totalgb100.ToString() + "  f:" + z10.ToString() + "  o:" + onediskgb0);
+
+
+                // cwl("HOW ARE YOU?");
+                //  if (used==1) { final5gb0 = onediskgb0; final6gb0 = onediskgb0; cwl("GOOD"); }
             }
             else
             {
                 if (comparision1st)
                 {
-                
-                //difference
-                snapshot0d = snapshot - snapshot0;
-                drives0d = used - drives0;
-                totalgb100d = z10 - totalgb100;
-                totalgb102d = z2 - totalgb102;
-                osper0d = osperdisk - osper0;
-                ostotal0d = totalosandswap - ostotal0;
-                ro10d = ro5 - ro10;
-                ro20d = ro6 - ro20;
-                afteros50d = afteros5 - afteros50;
-                afteros60d = afteros6 - afteros60;
-                afterro50d = afterOverhead5 - afterro50;
-                afterro60d = afterOverhead6 - afterro60;
-                aftersnap50d = final5Gb - aftersnap50;
-                aftersnap60d = final6Gb - aftersnap60;
-                final5gb0d = final5Gb - final5gb0;
-                final6gb0d = final6Gb - final6gb0;
-                final5tb0d = final5Tb - final5tb0;
-                final6tb0d = final6Tb - final6tb0;
-                onediskgb0d = onediskgb0 - onediskgb;
-                onedisktb0d = onedisktb0 - onedisktb;
-                onedisktb0d.ToString();
 
+                    //difference
+                    snapshot0d = snapshot - snapshot0;
+                    drives0d = used - drives0;
+                    totalgb100d = z10 - totalgb100;
+                    totalgb102d = z2 - totalgb102;
+                    osper0d = osperdisk - osper0;
+                    ostotal0d = totalosandswap - ostotal0;
+                    ro10d = ro5 - ro10;
+                    ro20d = ro6 - ro20;
+                    afteros50d = afteros5 - afteros50;
+                    afteros60d = afteros6 - afteros60;
+                    afterro50d = afterOverhead5 - afterro50;
+                    afterro60d = afterOverhead6 - afterro60;
+                    aftersnap50d = final5Gb - aftersnap50;
+                    aftersnap60d = final6Gb - aftersnap60;
+                    final5gb0d = final5Gb - final5gb0;
+                    final6gb0d = final6Gb - final6gb0;
+                    final5tb0d = final5Tb - final5tb0;
+                    final6tb0d = final6Tb - final6tb0;
+                    onediskgb0d = onediskgb - onediskgb0;
+                    onedisktb0d = onedisktb - onedisktb0;
+                    onedisktb0d.ToString();
+
+                }
             }
-        }
-        
-        
+
             //key is to calculate the difference before setting the new 0
+
+            //1.6 fix 1 disk original
+
+            if (torun && used == 1)
+            {
+                final5gb0 = onediskgb0;
+                final6gb0 = onediskgb0;
+                final5tb0 = onedisktb0;
+                final6tb0 = onedisktb0;
+                original_is_one_disk = true;
+            }
+
+            //////////////////////////////////////// 1.6 fix DECIDED THIS IS NOT SUPPORTED
+            //////////////////////////////////////bool showanotherline = false;
+            //////////////////////////////////////if ( drives0 > 1 && used == 1 ) 
+            //////////////////////////////////////{
+
+            //////////////////////////////////////   // onediskgb0=final5gb0;
+            //////////////////////////////////////    onediskgb0 = final5gb0;
+            //////////////////////////////////////    onedisktb06 = final6tb0;
+            //////////////////////////////////////    showanotherline = true;
+            //////////////////////////////////////  //  onedisktb0 = final6tb0;
+
+            //////////////////////////////////////   // final5gb0 = onediskgb0; 
+            //////////////////////////////////////   // final6gb0 = onediskgb0; 
+            //////////////////////////////////////   // final5tb0 = onedisktb0; 
+            //////////////////////////////////////   // final6tb0 = onedisktb0; 
+            //////////////////////////////////////   // original_is_one_disk = true;
+            //////////////////////////////////////}
+
+
+
             torun = false;
             //show results
             addline("# of Slots: " + numberofdrives);
@@ -717,7 +761,7 @@ namespace VolSizeCalc
             addword("  ");
             addword_blue(drives0d.ToString()); //diff
             addnl();
-            addline("Raid Overhead: " + raid_overhead*100 + "%");
+            addline("Raid Overhead: " + raid_overhead * 100 + "%");
             addword("# of Drives -");
             for (int o = 0; o < drivessize; o++)
             {
@@ -775,8 +819,8 @@ namespace VolSizeCalc
                         se = drives[c].ToString();
                     }
                     q = Convert.ToDouble(chist[c]);
-                    q10 = q*diffd/1000;
-                    q2 = (q*diffd*0.93132257461)/1024;
+                    q10 = q * diffd / 1000;
+                    q2 = (q * diffd * 0.93132257461) / 1024;
                     addline(ss + "-" + se + " Chunks:" + q.ToString() + " ---> Chunk Space base-two: " +
                             String.Format("{0:0.000}", q10) + " TB --- base-ten: " + String.Format("{0:0.000}", q2) +
                             " TB");
@@ -788,13 +832,14 @@ namespace VolSizeCalc
             //addline("Space Allotted in Base 2 - Raid5: " + String.Format("{0:0}", spaceR5_2) + " GB, Raid6: " + String.Format("{0:0}", spaceR6_2) + " GB");
             addline("Space Allotted in Base 2 - Raid5: " + String.Format("{0:0.000}", spaceR52Tb) + " TB, Raid6: " + String.Format("{0:0.000}", spaceR62Tb) + " TB");
             addline_italic("NOTE: Every size value below is in base 2, 'real space'");
+
             if (MoreInfo)
             {
 
                 addword_bold("OS & SWAP "); addword(" will take up ");
-                addword_bred( String.Format("{0:0.000}", osperdisk)+ " GB/Disk");
+                addword_bred(String.Format("{0:0.000}", osperdisk) + " GB/Disk");
                 addword(" on ");
-                addword_bred(used + " Disks" );
+                addword_bred(used + " Disks");
                 addword_bold(", Totaling: ");
                 addword_bred(String.Format("{0:0.000}", totalosandswap));
                 addnl();
@@ -806,11 +851,11 @@ namespace VolSizeCalc
                 addword_bblue(String.Format("{0:0.000}", ostotal0));
                 addnl();
                 addword_bold("Raid Overhead ");
-                addword(          "at ");
-                addword_bold(String.Format("{0:0.0}", raid_overhead*100) + "%");
+                addword("at ");
+                addword_bold(String.Format("{0:0.0}", raid_overhead * 100) + "%");
                 addword(" will cost ");
-                addword_bold(        "- Raid5: "); 
-                addword_bred(String.Format("{0:0}", ro5)+ " GB");
+                addword_bold("- Raid5: ");
+                addword_bred(String.Format("{0:0}", ro5) + " GB");
                 addword_bold(", Raid6: ");
                 addword_bred(String.Format("{0:0}", ro6) + " GB");
                 addnl();
@@ -826,10 +871,10 @@ namespace VolSizeCalc
                 addline_underline("After");
                 addword_bold(" OS & SWAP");
                 addword(" - ");
-                addword_bold ("Raid5: "); 
-                addword_bred(String.Format("{0:0.000}", afteros5)+ " GB");
-                addword_bold(", Raid6: " );
-                addword_bred(String.Format("{0:0.000}", afteros6) + " GB"); 
+                addword_bold("Raid5: ");
+                addword_bred(String.Format("{0:0.000}", afteros5) + " GB");
+                addword_bold(", Raid6: ");
+                addword_bred(String.Format("{0:0.000}", afteros6) + " GB");
                 addnl();
                 addline_underline("After");
                 addword_bold(" OS & SWAP");
@@ -840,13 +885,11 @@ namespace VolSizeCalc
                 addword_bblue(String.Format("{0:0.000}", afteros60) + " GB");
                 addnl();
 
-
-
                 addline_underline("After ");
-                     addword_bold("Raid Overhead ");
-                      addword(" - ");
-                      addword_bold("Raid5: "); 
-                addword_bred(String.Format("{0:0.000}", afterOverhead5) +  " GB");
+                addword_bold("Raid Overhead ");
+                addword(" - ");
+                addword_bold("Raid5: ");
+                addword_bred(String.Format("{0:0.000}", afterOverhead5) + " GB");
                 addword_bold(", Raid6: ");
                 addword_bred(String.Format("{0:0.000}", afterOverhead6) + " GB");
                 addnl();
@@ -861,8 +904,8 @@ namespace VolSizeCalc
                 addline_underline("After ");
                 addword_bold("Snapshot ");
                 addword(" - ");
-                addword_bold("Raid5: "); 
-                addword_bred(String.Format("{0:0.000}", final5Gb)  + " GB");
+                addword_bold("Raid5: ");
+                addword_bred(String.Format("{0:0.000}", final5Gb) + " GB");
                 addword_bold(", Raid6: ");
                 addword_bred(String.Format("{0:0.000}", final6Gb) + " GB");
                 addword_bold(" = FINAL VALUES");
@@ -879,20 +922,20 @@ namespace VolSizeCalc
             }
             else
             {
-               // addline(string.Format("Other factors - Os+Swap: {0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap,ro5,ro6,snapshot));
+                // addline(string.Format("Other factors - Os+Swap: {0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap,ro5,ro6,snapshot));
                 addword(string.Format("Other factors - ")); //"Os+Swap: {0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap, ro5, ro6, snapshot));
                 addword_bold(string.Format("Os&Swap: ")); //"{0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap, ro5, ro6, snapshot));
                 addword_bred(string.Format("{0:0.000}", totalosandswap));
                 addword(string.Format(" - "));
-                addword_bold(string.Format("R5/R6 Overhead: ")); 
+                addword_bold(string.Format("R5/R6 Overhead: "));
                 addword_bred(string.Format("{0:0.0}", ro5));
                 addword(string.Format("/"));
                 addword_bred(string.Format("{0:0.0}", ro6));
                 addword(string.Format(" - "));
-                addword_bold(string.Format("Snapshot: ")); 
+                addword_bold(string.Format("Snapshot: "));
                 addword_bred(string.Format("{0:0}", snapshot));
                 addnl();
-                if(comparison_enabled)
+                if (comparison_enabled)
                 {
                     addword(string.Format("Other factors - ")); //"Os+Swap: {0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap, ro5, ro6, snapshot));
                     addword_bold(string.Format("Os&Swap: ")); //"{0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap, ro5, ro6, snapshot));
@@ -922,9 +965,9 @@ namespace VolSizeCalc
                 //addword(string.Format("Other factors - Os+Swap: {0:0.000} - R5/R6 Overhead: {1:0.0}/{2:0.0} - Snapshot: {3:0.0}", totalosandswap, ro5, ro6, snapshot));
             }
             addline_italic("RAID5: " + pr5 + " - RAID6: " + pr6);
-            double percentfinal5diff ;
-            double percentfinal6diff ;
-            double percent1diskdiff ;
+            double percentfinal5diff;
+            double percentfinal6diff;
+            double percent1diskdiff;
             if (Convert.ToDouble(final5tb0) == Convert.ToDouble(0))
             {
                 percentfinal5diff = 0;
@@ -934,14 +977,14 @@ namespace VolSizeCalc
                 percentfinal5diff = final5tb0d / final5tb0 * 100;
             }
 
-            if (Convert.ToDouble(final6tb0) ==Convert.ToDouble( 0))
+            if (Convert.ToDouble(final6tb0) == Convert.ToDouble(0))
             {
                 percentfinal6diff = 0;
             }
             else
             {
                 percentfinal6diff = final6tb0d / final6tb0 * 100;
-                
+
             }
             if (Convert.ToDouble(onedisktb0) == Convert.ToDouble(0))
             {
@@ -951,31 +994,34 @@ namespace VolSizeCalc
             {
                 percent1diskdiff = onedisktb0d / onedisktb0 * 100;
             }
-           
-           
+
+
             if (used != 1)
             {
                 addline_boldBIG("####### FINAL RESULTS #######");
-                addword_boldBIG("Raid5:"); 
+                addword_boldBIG("Raid5:");
                 addword(" " + String.Format("{0:0.000}", final5Gb) + " GB, ");
                 addword_bredBIG(String.Format("{0:0.000}", final5Tb) + " TB");
                 addword("  ");
-                addword_bblue(String.Format("{0:0.000}",final5tb0) + " TB");
-                addword("  Diff:");
-                addword_blue(String.Format("{0:0.000}",final5tb0d) + " TB");
+                addword_bblue(String.Format("{0:0.000}", final5tb0) + " TB");
+                addword("  Diff: ");
+                addword_blue(String.Format("{0:0.000}", final5tb0d) + " TB");
                 addword(" ");
                 addword_blue("(" + String.Format("{0:0.00}", percentfinal5diff) + "%)");
                 addnl();
-                addword_boldBIG("Raid6:"); 
+                addword_boldBIG("Raid6:");
                 addword(" " + String.Format("{0:0.000}", final6Gb) + " GB, ");
                 addword_bredBIG(String.Format("{0:0.000}", final6Tb) + " TB");
                 addword("  ");
-                addword_bblue(String.Format("{0:0.000}",final6tb0) + " TB");
+                addword_bblue(String.Format("{0:0.000}", final6tb0) + " TB");
                 addword("  Diff: ");
-                addword_blue(String.Format("{0:0.000}",final6tb0d) + " TB");
+                addword_blue(String.Format("{0:0.000}", final6tb0d) + " TB");
                 addword(" ");
                 addword_blue("(" + String.Format("{0:0.00}", percentfinal6diff) + "%)");
                 addnl();
+                // from 1 disk to raid 5 and 6
+
+
             }
             else
             {
@@ -984,19 +1030,47 @@ namespace VolSizeCalc
                 addword(" " + String.Format("{0:0.000}", onediskgb) + " GB, ");
                 addword_bredBIG(String.Format("{0:0.000}", onedisktb) + " TB");
                 addword("  ");
-                addword_bblue(String.Format("{0:0.000}",onedisktb0) + " TB");
-                addword("  Diff:");
-                addword_blue(String.Format("{0:0.00}",onedisktb0d) + " TB");
+                addword_bblue(String.Format("{0:0.000}", onedisktb0) + " TB");
+                addword("  Diff from 1 disk: ");
+                addword_blue(String.Format("{0:0.00}", onedisktb0d) + " TB");
                 addword(" ");
-                addword_blue("(" +String.Format("{0:0.00}", percent1diskdiff) + "%)");
+                addword_blue("(" + String.Format("{0:0.00}", percent1diskdiff) + "%)");
                 addnl();
+
+
+                if (showanotherline)   // from raid5 and 6 to 1 disk
+                {
+                    five_to_one = onedisktb - final5tb0;
+                    six_to_one = onedisktb - final6tb0;
+                    five_to_one_percent = (five_to_one / onedisktb) * 100;
+                    six_to_one_percent = (six_to_one / onedisktb) * 100;
+
+                    addword_boldBIG("Old Values - RAID5: ");
+                    addword_bblue(String.Format("{0:0.000}", final5tb0) + " TB "); // old raid 5
+                    addword("Diffs from R5:");
+                    addword_blue(" " + String.Format("{0:0.00}", five_to_one) + " TB (");
+                    addword_blue(String.Format("{0:0.00}", five_to_one_percent));
+                    addword_blue("%)");
+                    addnl();
+
+                    addword_boldBIG("Old Values - RAID6: ");
+                    addword_bblue(String.Format("{0:0.000}", final6tb0) + " TB ");
+                    addword("Diffs from R6:");
+                    addword_blue(" " + String.Format("{0:0.000}", six_to_one) + " TB (");
+                    addword_blue(String.Format("{0:0.000}", six_to_one_percent));
+                    addword_blue("%)");
+                    addnl();
+                }
+
+
+
             }
             addword("===LEGEND below:===");
             addnl();
-             addword_bredBIG("BOLD RED WITH YELLOW HIGHLIGHT: Current FINAL Value in TBs"); addnl();
-           addword_bred("BOLD RED: Current Value"); addnl();
-             addword_bblue("BOLD BLUE: Old Value (Set with Baseline)"); addnl();
-           addword_blue("LIGHT BLUE: Difference from baseline old value and new"); addnl();
+            addword_bredBIG("BOLD RED WITH YELLOW HIGHLIGHT: Current FINAL Value in TBs"); addnl();
+            addword_bred("BOLD RED: Current Value"); addnl();
+            addword_bblue("BOLD BLUE: Old Value (Set with Baseline)"); addnl();
+            addword_blue("LIGHT BLUE: Difference from baseline old value and new"); addnl();
             ScrollToBottom();
         }
 
@@ -1008,8 +1082,8 @@ namespace VolSizeCalc
                 itm = ((Control)item).Name;
                 if (itm == "lbr")
                 {
-                    ((RichTextBox) item).Select(((RichTextBox) item).TextLength, 0);
-                    ((RichTextBox) item).ScrollToCaret();
+                    ((RichTextBox)item).Select(((RichTextBox)item).TextLength, 0);
+                    ((RichTextBox)item).ScrollToCaret();
                 }
             }
         }
@@ -1022,7 +1096,7 @@ namespace VolSizeCalc
                 itm = ((Control)item).Name;
                 if (itm == "lbr")
                 {
-                    ((RichTextBox)item).AppendText(str+ Environment.NewLine);
+                    ((RichTextBox)item).AppendText(str + Environment.NewLine);
                 }
             }
         }
@@ -1034,7 +1108,7 @@ namespace VolSizeCalc
                 itm = ((Control)item).Name;
                 if (itm == "lbr")
                 {
-                    ((RichTextBox)item).AppendText(str );
+                    ((RichTextBox)item).AppendText(str);
                 }
             }
         }
@@ -1061,15 +1135,15 @@ namespace VolSizeCalc
                 itm = ((Control)item).Name;
                 if (itm == "lbr")
                 {
-                     before = ((RichTextBox)item).Text.Length;
-                     ((RichTextBox)item).AppendText(str +Environment.NewLine);
-                     after = ((RichTextBox)item).Text.Length;
-                     lengthh = after - before;
-                     cwl(before + " AFTER: " + after + " LENGTH:" + lengthh);
-                     ((RichTextBox)item).Select(before, lengthh);
-                     ((RichTextBox)item).SelectionColor = Color.Red;
-                     ((RichTextBox)item).Select(after, 0);
-                     ((RichTextBox)item).SelectionColor = Color.Black; 
+                    before = ((RichTextBox)item).Text.Length;
+                    ((RichTextBox)item).AppendText(str + Environment.NewLine);
+                    after = ((RichTextBox)item).Text.Length;
+                    lengthh = after - before;
+                   // cwl(before + " AFTER: " + after + " LENGTH:" + lengthh);
+                    ((RichTextBox)item).Select(before, lengthh);
+                    ((RichTextBox)item).SelectionColor = Color.Red;
+                    ((RichTextBox)item).Select(after, 0);
+                    ((RichTextBox)item).SelectionColor = Color.Black;
                 }
             }
         }
@@ -1077,7 +1151,7 @@ namespace VolSizeCalc
         {
             string itm;
             int before, after, lengthh;
-            if ( comparison_enabled)
+            if (comparison_enabled)
             {
                 foreach (var item in this.Controls)
                 {
@@ -1088,7 +1162,7 @@ namespace VolSizeCalc
                         ((RichTextBox)item).AppendText(str + Environment.NewLine);
                         after = ((RichTextBox)item).Text.Length;
                         lengthh = after - before;
-                        cwl(before + " AFTER: " + after + " LENGTH:" + lengthh);
+                       // cwl(before + " AFTER: " + after + " LENGTH:" + lengthh);
                         ((RichTextBox)item).Select(before, lengthh);
                         ((RichTextBox)item).SelectionColor = Color.Blue;
                         ((RichTextBox)item).Select(after, 0);
@@ -1107,7 +1181,7 @@ namespace VolSizeCalc
                 if (itm == "lbr")
                 {
                     before = ((RichTextBox)item).Text.Length;
-                    ((RichTextBox)item).AppendText(str );
+                    ((RichTextBox)item).AppendText(str);
                     after = ((RichTextBox)item).Text.Length;
                     lengthh = after - before;
                     ((RichTextBox)item).Select(before, lengthh);
@@ -1205,7 +1279,7 @@ namespace VolSizeCalc
                     ((RichTextBox)item).Select(before, lengthh);
                     ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Bold);
                     ((RichTextBox)item).SelectionBackColor = Color.Yellow;
-             
+
                     ((RichTextBox)item).Select(after, 0);
                     ((RichTextBox)item).SelectionBackColor = Color.White;
                     ((RichTextBox)item).SelectionColor = Color.Black;
@@ -1250,7 +1324,7 @@ namespace VolSizeCalc
                 if (itm == "lbr")
                 {
                     before = ((RichTextBox)item).Text.Length;
-                    ((RichTextBox)item).AppendText(str );
+                    ((RichTextBox)item).AppendText(str);
                     after = ((RichTextBox)item).Text.Length;
                     lengthh = after - before;
                     ((RichTextBox)item).Select(before, lengthh);
@@ -1296,7 +1370,7 @@ namespace VolSizeCalc
                     ((RichTextBox)item).Select(before, lengthh);
                     ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Bold);
                     ((RichTextBox)item).SelectionBackColor = Color.Yellow; //= new Font(((RichTextBox)item).Font, FontStyle.Bold);
-                //((RichTextBox).item).
+                    //((RichTextBox).item).
                     //((RichTextBox)item).Selectio
                     ((RichTextBox)item).Select(after, 0);
                     ((RichTextBox)item).SelectionBackColor = Color.White;
@@ -1318,9 +1392,9 @@ namespace VolSizeCalc
                     after = ((RichTextBox)item).Text.Length;
                     lengthh = after - before;
                     ((RichTextBox)item).Select(before, lengthh);
-                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font.FontFamily,8, FontStyle.Bold);
+                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font.FontFamily, 8, FontStyle.Bold);
                     ((RichTextBox)item).Select(after, 0);
-                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font.FontFamily,fsizereg, FontStyle.Regular);
+                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font.FontFamily, fsizereg, FontStyle.Regular);
                 }
             }
         }
@@ -1360,7 +1434,7 @@ namespace VolSizeCalc
                     after = ((RichTextBox)item).Text.Length;
                     lengthh = after - before;
                     ((RichTextBox)item).Select(before, lengthh);
-                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Underline );
+                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Underline);
                     ((RichTextBox)item).Select(after, 0);
                     ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Regular);
                 }
@@ -1420,7 +1494,143 @@ namespace VolSizeCalc
             {
                 def_drive();
             }
-         }
+            else if (optionselected == "Clear Selection") { clear_all_selects(); }
+            else if (optionselected == "Select All") { select_all(); }
+
+        }
+
+        private void clear_all_selects()
+        {
+            string itm;
+  
+        
+            foreach (var item in this.Controls)
+            {
+               
+                 itm = ((Control)item).Name;
+           
+                  if (((itm.Contains("ata") & (itm.Contains("lata")==false)) & (itm.Contains("a0") == false)))
+                  {
+                      ((CheckedListBox)item).ClearSelected();
+                      for (int i = 0; i < ((CheckedListBox)item).Items.Count; i++)
+                      {
+                          CheckState is_item_checked = ((CheckedListBox)item).GetItemCheckState(i) ;
+
+
+                          if ( is_item_checked == CheckState.Checked | is_item_checked == CheckState.Indeterminate) 
+                          {
+                              ((CheckedListBox)item).SetItemCheckState(i, CheckState.Unchecked);
+                          }
+                    
+                      }
+                     
+                  }                  
+             
+
+            }
+          
+            calc(true);
+        }
+
+        private void select_all()
+        {
+            string itm = "";
+            Form2 f = new Form2();
+            f.Text = Resources.WhatToSelectTitle;
+            f.lb.Text = Resources.WhatToSelect;
+            f.Width = f.PreferredSize.Width + 10;
+            f.Height = f.PreferredSize.Height + 10;
+            f.ShowDialog();
+            string mess = f.mess;
+            // convert to useable number
+            if (mess == "cancel") { return; }
+            double x = -1;
+            try
+            {
+                x = Convert.ToDouble(mess);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(Resources.InvalidDriveSize);
+                return;
+            }
+
+
+            //MessageBox.Show(x + " GB");
+            string entry = x + " GB";
+            entry = entry.Trim();
+            int where = -2;
+
+            foreach (var item in this.Controls)
+            {
+
+                itm = ((Control)item).Name;
+
+              
+
+
+
+
+                if (((itm.Contains("ata") & (itm.Contains("lata") == false)) & (itm.Contains("a0") == false)))
+                {
+                    //before unchecking anything make sure looking for a valid number
+                    where = ((CheckedListBox)item).Items.IndexOf(entry);
+                    if (where == -1)
+                    {
+                        return;
+                    }
+
+                    // first unselect everything
+                    ((CheckedListBox)item).ClearSelected();
+                    //uncheck everything
+                    for (int i = 0; i < ((CheckedListBox)item).Items.Count; i++)
+                    {
+                        CheckState is_item_checked = ((CheckedListBox)item).GetItemCheckState(i);
+
+
+                        if (is_item_checked == CheckState.Checked | is_item_checked == CheckState.Indeterminate)
+                        {
+                            ((CheckedListBox)item).SetItemCheckState(i, CheckState.Unchecked);
+                        }
+
+                    }
+                    //find the entry and check it
+
+                    where = ((CheckedListBox)item).Items.IndexOf(entry);
+
+                    if (where != -1)
+                    {
+                         ((CheckedListBox)item).SetItemCheckState(where, CheckState.Checked);
+                         ((CheckedListBox)item).SetSelected(where, true);
+                    }
+
+                    //for (int i = 0; i < ((CheckedListBox)item).Items.Count; i++)
+                    //{
+
+                    //    //where=
+
+                    //    //cwl(((CheckedListBox)item).Items.IndexOf(entry) + " === " + entry);
+
+                    //    //if (((CheckedListBox)item).GetItemText(i).Equals(entry))
+                    //    //{
+
+                    //    //    ((CheckedListBox)item).SetItemCheckState(i, CheckState.Checked);
+                    //    //    ((CheckedListBox)item).SetSelected(i, true);
+                            
+                    //    //}
+
+
+                    //}
+
+
+
+                }
+
+
+            }
+
+            calc(true);
+        }
         private void add_drive()
         {
             if (drives.Count >= 60)
@@ -1505,7 +1715,7 @@ namespace VolSizeCalc
                 return;
             }
             premakeall();
-            
+
         }
         private void def_drive()
         {
@@ -1521,11 +1731,14 @@ namespace VolSizeCalc
         }
         private void button3_Click(object sender, EventArgs e)
         {
-           // clear_baseline();
+            // clear_baseline();
+
             comparision1st = true;
             torun = true;
             clear_diffs();
+            original_is_one_disk = false;
             calc(true);
+
             //premakeall();
         }
 
@@ -1534,6 +1747,8 @@ namespace VolSizeCalc
             MoreInfo = checkBox1.Checked;
             calc(true);
         }
+
+        private void ata0_SelectedIndexChanged(object sender, EventArgs e) { }
     }
 }
 

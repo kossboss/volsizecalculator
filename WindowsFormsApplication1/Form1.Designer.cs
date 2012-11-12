@@ -54,6 +54,7 @@
             this.ata0.Name = "ata0";
             this.ata0.Size = new System.Drawing.Size(107, 154);
             this.ata0.TabIndex = 0;
+            this.ata0.SelectedIndexChanged += new System.EventHandler(this.ata0_SelectedIndexChanged);
             // 
             // lata0
             // 
@@ -221,8 +222,9 @@
             this.Controls.Add(this.lata0);
             this.Controls.Add(this.ata0);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.MaximizeBox = false;
             this.Name = "Form1";
-            this.Text = "X-RAID Calculator (By: Kostia Khlebopros)";
+            this.Text = "X-RAID Calculator (By: kossboss)";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Shown += new System.EventHandler(this.Form1_Shown);
             this.Click += new System.EventHandler(this.Form1_Click);
