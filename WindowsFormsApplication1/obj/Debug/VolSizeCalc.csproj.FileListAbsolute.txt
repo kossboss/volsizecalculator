@@ -1,0 +1,40 @@
+C:\Users\kkhlebopros\0Files\Projects\Volsize-new algo\WindowsFormsApplication1\obj\Debug\VolSizeCalc.Form1.resources
+C:\Users\kkhlebopros\0Files\Projects\Volsize-new algo\WindowsFormsApplication1\obj\Debug\VolSizeCalc.Form2.resources
+C:\Users\kkhlebopros\0Files\Projects\Volsize-new algo\WindowsFormsApplication1\obj\Debug\VolSizeCalc.Properties.Resources.resources
+C:\Users\kkhlebopros\0Files\Projects\Volsize-new algo\WindowsFormsApplication1\obj\Debug\VolSizeCalc.csproj.GenerateResource.Cache
+C:\Users\kkhlebopros\0Files\Projects\Volsize-new algo\WindowsFormsApplication1\obj\Debug\VolSizeCalc.exe
+C:\Users\kkhlebopros\0Files\Projects\Volsize-new algo\WindowsFormsApplication1\obj\Debug\VolSizeCalc.pdb
+C:\Users\kkhlebopros\0Files\Projects\Volsize-new algo\WindowsFormsApplication1\bin\Debug\VolSizeCalc.exe.config
+C:\Users\kkhlebopros\0Files\Projects\Volsize-new algo\WindowsFormsApplication1\bin\Debug\VolSizeCalc.exe
+C:\Users\kkhlebopros\0Files\Projects\Volsize-new algo\WindowsFormsApplication1\bin\Debug\VolSizeCalc.pdb
+C:\Users\kkhlebopros\0Files\Projects\Volsize-new algo\WindowsFormsApplication1\obj\Debug\VolSizeCalc.csprojResolveAssemblyReference.cache
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.0\WindowsFormsApplication1\bin\Debug\VolSizeCalc.exe.config
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.0\WindowsFormsApplication1\obj\Debug\VolSizeCalc.exe
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.0\WindowsFormsApplication1\obj\Debug\VolSizeCalc.pdb
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.0\WindowsFormsApplication1\bin\Debug\VolSizeCalc.exe
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.0\WindowsFormsApplication1\bin\Debug\VolSizeCalc.pdb
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.0\WindowsFormsApplication1\obj\Debug\VolSizeCalc.csprojResolveAssemblyReference.cache
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.0\WindowsFormsApplication1\obj\Debug\VolSizeCalc.Form1.resources
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.0\WindowsFormsApplication1\obj\Debug\VolSizeCalc.Form2.resources
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.0\WindowsFormsApplication1\obj\Debug\VolSizeCalc.Properties.Resources.resources
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.0\WindowsFormsApplication1\obj\Debug\VolSizeCalc.csproj.GenerateResource.Cache
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.1\WindowsFormsApplication1\bin\Debug\VolSizeCalc.exe.config
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.1\WindowsFormsApplication1\obj\Debug\VolSizeCalc.exe
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.1\WindowsFormsApplication1\obj\Debug\VolSizeCalc.pdb
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.1\WindowsFormsApplication1\bin\Debug\VolSizeCalc.exe
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.1\WindowsFormsApplication1\bin\Debug\VolSizeCalc.pdb
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.1\WindowsFormsApplication1\obj\Debug\VolSizeCalc.csprojResolveAssemblyReference.cache
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.1\WindowsFormsApplication1\obj\Debug\VolSizeCalc.Form1.resources
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.1\WindowsFormsApplication1\obj\Debug\VolSizeCalc.Form2.resources
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.1\WindowsFormsApplication1\obj\Debug\VolSizeCalc.Properties.Resources.resources
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.1\WindowsFormsApplication1\obj\Debug\VolSizeCalc.csproj.GenerateResource.Cache
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.2\WindowsFormsApplication1\bin\Debug\VolSizeCalc.exe.config
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.2\WindowsFormsApplication1\obj\Debug\VolSizeCalc.exe
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.2\WindowsFormsApplication1\obj\Debug\VolSizeCalc.pdb
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.2\WindowsFormsApplication1\bin\Debug\VolSizeCalc.exe
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.2\WindowsFormsApplication1\bin\Debug\VolSizeCalc.pdb
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.2\WindowsFormsApplication1\obj\Debug\VolSizeCalc.csprojResolveAssemblyReference.cache
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.2\WindowsFormsApplication1\obj\Debug\VolSizeCalc.Form1.resources
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.2\WindowsFormsApplication1\obj\Debug\VolSizeCalc.Form2.resources
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.2\WindowsFormsApplication1\obj\Debug\VolSizeCalc.Properties.Resources.resources
+C:\Users\kkhlebopros\0Files\Projects\Volsize-1.2\WindowsFormsApplication1\obj\Debug\VolSizeCalc.csproj.GenerateResource.Cache
