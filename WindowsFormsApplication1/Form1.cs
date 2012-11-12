@@ -11,15 +11,14 @@ using System.Text.RegularExpressions;
 using System.Collections;
 using System.IO;
 using System.Reflection;
-
-
-namespace WindowsFormsApplication1
+namespace VolSizeCalc
 {
     public partial class Form1 : Form
     {
         int pref_h, pref_w, pref_dy, plab_lx, plab_ly, pata_lx, pata_ly, pref_label_h;
         int ndef = 4;
         int numberofdrives;
+        ArrayList drives = new ArrayList(60);
         const double sparc_os = 2;  //gb
         const double sparc_swap = 0.256;  //gb
         const double intel_os = 4;  //gb
@@ -27,46 +26,131 @@ namespace WindowsFormsApplication1
         const double arm_os = 4; //gb
         const double arm_swap = 0.512; //gb
         const double raid_overhead = 0.02; // percent
+        // Declare the ContextMenuStrip control. 
+        // for difference
+        //old
+        int snapshot0;
+        string architecture0;
+        int drives0; //total drives in place basically used0 
+        double totalgb100;
+        double totalgb102;
+        double osper0, ostotal0;
+        double ro10, ro20;
+        double afterro50, afterro60;
+        double aftersnap50, aftersnap60;
+        string r5poss0, r6poss0;
+        double final5gb0, final6gb0, final5tb0, final6tb0;
+        double onediskgb0, onedisktb0;
+        //differences, note the 2 strings lines dont get differences
+        int snapshot0d;
+        int drives0d; //total drives in place basically used0 
+        double totalgb100d;
+        double totalgb102d;
+        double osper0d, ostotal0d;
+        double ro10d, ro20d;
+        double afterro50d, afterro60d;
+        double aftersnap50d, aftersnap60d;
+        double final5gb0d, final6gb0d, final5tb0d, final6tb0d;
+        double onediskgb0d, onedisktb0d;
+        //
+        bool torun ;
+        //forgot
+        double afteros50 , afteros50d;
+        double afteros60 , afteros60d;
+        bool comparison_enabled = false;
         public Form1()
         {
             InitializeComponent();
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-            //Application.Cu
-            //Assembly _assembly;
-            //Stream _imageStream;
-           
-            //_assembly = Assembly.GetExecutingAssembly();
-            //_imageStream = _assembly.GetManifestResourceStream("icon.ico");
-
-            //this.Icon = new Icon(_imageStream);
-         //
-            //Icon ico = new Icon(
+            torun = false;
+            clear_baseline();
             // make 1 good sized one and then make it disappear
             init_vars();
             //
             tb_nd.Text = ndef.ToString();
             // make_all(ndef);
+            if (comparison_enabled)
+            { button3.Enabled = true; button3.Visible = true; }
+            else
+            { button3.Enabled = false; button3.Visible = false; }
+        }
+        private void clear_baseline()
+        {
+            //original
+            snapshot0 = 0;
+            architecture0 = "";
+            drives0 = 0; //total drives in place basically used0 
+            totalgb100 = 0;
+            totalgb102 = 0;
+            osper0 = 0;
+            ostotal0 = 0;
+            ro10 = 0;
+            ro20 = 0;
+            afterro50 = 0;
+            afterro60 = 0;
+            aftersnap50 = 0;
+            aftersnap60 = 0;
+            r5poss0 = "";
+            r6poss0 = "";
+            final5gb0 = 0;
+            final6gb0 = 0;
+            final5tb0 = 0;
+            final6tb0 = 0;
+            onediskgb0 = 0;
+            onedisktb0 = 0;
+//            MessageBox.Show("Cleared");
+            //difference
+            snapshot0d = 0;
+            drives0d = 0;
+            totalgb100d = 0;
+            totalgb102d = 0;
+            osper0d = 0;
+            ostotal0d = 0;
+            ro10d = 0;
+            ro20d = 0;
+            afterro50d = 0;
+            afterro60d = 0;
+            aftersnap50d = 0;
+            aftersnap60d = 0;
+            final5gb0d = 0;
+            final6gb0d = 0;
+            final5tb0d = 0;
+            final6tb0d = 0;
+            onediskgb0d = 0;
+            onedisktb0d = 0;
+            //key is to calculate the difference before setting the new 0
+            //forgot
+            afteros50 =0; 
+            afteros50d=0;
+            afteros60=0 ; 
+            afteros60d=0;
+        }
+        private void init_drives()
+        {
+            double d = 500;
+            drives.Add(d);
+            d = 750; drives.Add(d);
+            d = 1000; drives.Add(d);
+            d = 1500; drives.Add(d);
+            d = 2000; drives.Add(d);
+            d = 3000; drives.Add(d);
+            drives.Sort();
         }
         private void init_vars()
         {
+            init_drives();
             // lots of the controls on screen are predefined with settings, i could of put it here but instead its in the Designer.cs. mostly TabIndex and whats checked in the radioboxes
             // make 1 good sized one and then make it disappear
-            
             lata0.Text = "Drive 0";
+            ata0.Font = new Font(ata0.Font.FontFamily, 7);
             ata0.Items.Add("500 GB", false);
+            ata0.Items.Add("750 GB", false);
             ata0.Items.Add("1000 GB", false);
             ata0.Items.Add("1500 GB", false);
             ata0.Items.Add("2000 GB", false);
             ata0.Items.Add("3000 GB", false);
-            //ata0.Items.Add("4000 GB", false);
-            //ata0.Items.Add("0.5 TB", false);
-            //ata0.Items.Add("1.0 TB", false);
-            //ata0.Items.Add("1.5 TB", false);
-            //ata0.Items.Add("2.0 TB", false);
-            //ata0.Items.Add("3.0 TB", false);
-            //ata0.Items.Add("4000 GB", false);
             int toth = 0;
             for (int i = 0; i < ata0.Items.Count; i++) { toth += ata0.GetItemHeight(i); }
             ata0.Height = ata0.PreferredHeight;
@@ -83,11 +167,17 @@ namespace WindowsFormsApplication1
             // disappear them
             ata0.Visible = false;
             lata0.Visible = false;
+
+            // cms.Items.Add("Add Drive size");
+            cms.Items.Add("Add Drive Size");
+            cms.Items.Add("Remove Drive Size");
+            cms.Items.Add("DEFAULT");
         }
         private void make_all(int num_of_drives)
         {
             int n = num_of_drives;
             int offx, offy, modd;
+            int d = drives.Count;
             offx = 0; offy = 0;
             // make them on the run
             if (n > 12) { modd = 12; } else { modd = 4; }
@@ -95,28 +185,25 @@ namespace WindowsFormsApplication1
             {
                 CheckedListBox ata = new CheckedListBox();
                 Label lata = new Label();
+                ContextMenu mtt = new ContextMenu();
+                ContextMenuStrip mt = new ContextMenuStrip();
                 ata.Name = "ata" + i.ToString();
                 lata.Name = "lata" + i.ToString();
                 ata.Size = new Size(pref_w, pref_h);
+                ata.Font = new Font(ata.Font.FontFamily, 7);
                 ata.Location = new Point(pata_lx + offx, pata_ly + offy);
                 lata.Height = pref_h;
                 lata.Width = pref_w;
-                lata.Location = new Point(plab_lx + offx, plab_ly + offy);
+                lata.Location = new Point(plab_lx + offx, plab_ly + offy + 4);
                 lata.Text = "Drive" + i.ToString();
-                ata.Items.Add("500 GB", false);
-                ata.Items.Add("1000 GB", false);
-                ata.Items.Add("1500 GB", false);
-                ata.Items.Add("2000 GB", false);
-               ata.Items.Add("3000 GB", false);
-                //ata.Items.Add("4000 GB", false);
-                ata0.Items.Add("0.5 TB", false);
-                ata0.Items.Add("1.0 TB", false);
-                ata0.Items.Add("1.5 TB", false);
-                ata0.Items.Add("2.0 TB", false);
-                ata0.Items.Add("3.0 TB", false);
+                for (int j = 0; j < d; j++)
+                {
+                    ata.Items.Add(drives[j] + " GB", false);
+                }
                 ata.CheckOnClick = true;
                 ata.SetSelected(0, false);
                 ata.TabIndex = i + 4;
+                ata.ContextMenuStrip = cms;
                 this.Controls.Add(ata);
                 this.Controls.Add(lata);
                 ata.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(ata_ItemCheck);
@@ -127,7 +214,6 @@ namespace WindowsFormsApplication1
                     offx = 0;
                     offy += 110; // that equals 133
                 }
-
             }
             int sw, sh, sw1, sh1;
             // get sizes after all controls besides the listbox are there to help size the listbox
@@ -135,11 +221,14 @@ namespace WindowsFormsApplication1
             sh = this.PreferredSize.Height;
             sw1 = 0;
             sh1 = 0;
-            // make lbr
-            ListBox lbr = new ListBox();
+            //ListBox lbr = new ListBox();
+            RichTextBox lbr = new RichTextBox();
             lbr.Name = "lbr";
-            lbr.Size = new Size(sw - 25, 390);
+            //  lbr.HorizontalScrollbar = true;
+            lbr.Size = new Size(sw - 25, 350); //used to be 390
             lbr.Location = new Point(10, sh - 20);
+            // lbr.ZoomFactor = 0.5;// convert.float(zoomfactor);
+            lbr.Font = new Font(lbr.Font.FontFamily, 10, lbr.Font.Style);
             this.Controls.Add(lbr);
             // resize the window
             sw1 = this.PreferredSize.Width;
@@ -209,6 +298,10 @@ namespace WindowsFormsApplication1
         private void cwl(string msg) { System.Console.WriteLine(msg); }
         private void tb_nd_TextChanged(object sender, EventArgs e)
         {
+            premakeall();
+        }
+        private void premakeall()
+        {
             try
             {
                 if (tb_nd.Text == "")
@@ -239,7 +332,7 @@ namespace WindowsFormsApplication1
             //  tssl.Text = "TESTTEST";
             string s;
             removelines();
-          
+
             if (works == false)
             {
                 s = "You must pick between 0 and 60 drives";
@@ -252,7 +345,22 @@ namespace WindowsFormsApplication1
         }
         private void actualcalc()
         {
-
+            int drivessize = drives.Count;
+            int[] hist;
+            int[] chist;
+            int[] chist5;
+            int[] chist6;
+            hist = new int[drivessize];
+            chist = new int[drivessize];
+            chist5 = new int[drivessize];
+            chist6 = new int[drivessize];
+            for (int g = 0; g < drivessize; g++)
+            {
+                hist[g] = 0;
+                chist[g] = 0;
+                chist5[g] = -1;
+                chist6[g] = -2;
+            }
             int snapshot;
             double os_size = 0;
             double swap_size = 0;
@@ -266,22 +374,13 @@ namespace WindowsFormsApplication1
             double size10 = 0;
             double final10 = 0;
             double final2 = 0;
-            int c500, c1000, c1500, c2000, c3000;
-
-            int ch5, ch10, ch15, ch20, ch30; //each chunk is 500 gb wide... so ch5 is from 0 to 500, ch10 is from 500 to 1000
-            ch5 = 0; ch10 = 0; ch10 = 0; ch15 = 0; ch20 = 0; ch30 = 0;
-            c500 = 0; c1000 = 0; c1500 = 0; c2000 = 0; c3000 = 0;
-            ArrayList drives = new ArrayList();
-            drives.Clear();
             snapshot = Convert.ToInt16(nSnap.Value);
             if (rbX86.Checked) { stype = "Intel / x86"; os_size = intel_os; swap_size = intel_swap; }
             else if (rbARM.Checked) { stype = "Arm"; os_size = arm_os; swap_size = arm_swap; }
             else if (rbSPARC.Checked) { stype = "Sparc"; os_size = sparc_os; swap_size = sparc_swap; }
             os_and_swap = os_size + swap_size;
-            addline("Drives: " + numberofdrives);
-            addline("Snapshot size [GB base 2]: " + snapshot);
-            addline("Architecture: " + stype.ToString());
-            // calc all drives
+           // addline("Snapshot size [GB base 2]: " + snapshot);
+           //   addline("Architecture: " + stype.ToString());
             foreach (var item in this.Controls)
             {
                 r = -1; r1 = -1; //reset some variables
@@ -299,32 +398,27 @@ namespace WindowsFormsApplication1
                         biggestdrive = capd;
 
                     }
-                    switch (biggestdrive)
-                    {
-                        case "0.5 TB": ++c500; break;
-                        case "1.0 TB": ++c1000; break;
-                        case "1.5 TB": ++c1500; break;
-                        case "2.0 TB": ++c2000; break;
-                        case "3.0 TB": ++c3000; break;
-                    }
-
                     r = ((CheckedListBox)item).CheckedIndices.Count; // how many drives are selected there
                     r1 = ((CheckedListBox)item).Items.IndexOf(biggestdrive); //index of largest drive
                     if (biggestdrive != "NOTHING") // found a drive **
                     {
                         r2 = Convert.ToDouble(biggestdrive.Substring(0, biggestdrive.IndexOf("GB")));
                         ((CheckedListBox)item).SetSelected(r1, true);
-                        if (r2 == 3000) { ++ch5; ++ch10; ++ch15; ++ch20; ++ch30; }
-                        else if (r2 == 2000) { ++ch5; ++ch10; ++ch15; ++ch20; }
-                        else if (r2 == 1500) { ++ch5; ++ch10; ++ch15; }
-                        else if (r2 == 1000) { ++ch5; ++ch10; }
-                        else if (r2 == 500) { ++ch5; }
+                        //NEW WAY
+                        int ind;  //since ordered their index surves a good place on x axis in histogram
+                        ind = drives.IndexOf(r2);
+                        hist[ind]++;
+                        for (int v = 0; v <= ind; v++)
+                        {
+                            chist[v]++;
+                            chist5[v]++;
+                            chist6[v]++;
+                        }
                     }
                     else
                     {
                         r2 = 0;
                         ((CheckedListBox)item).SetSelected(0, false);
-
                     }
                     size10 += r2;
                 }
@@ -333,46 +427,50 @@ namespace WindowsFormsApplication1
             //double cf;            // cf = (1000 ^ 3) / (1024 ^ 3) = 09.93132257461;
             final2 = final10 * (1000 ^ 3) / (1024 ^ 3);
             int used = numberofdrives - unused;
-            addline("Raid Overhead: " + raid_overhead * 100 + "%");
-            addline("# of Drives - 500gb=" + c500 + " ,1000gb=" + c1000 + " ,1500gb=" + c1500 + " ,2000gb=" + c2000 + " ,3000gb=" + c3000);
-            addline("Total Disk Size In Place [GB base 10]: " + String.Format("{0:0.000}", final10).ToString());
-            addline("Total Disk Size In Place [GB base 2]: " + String.Format("{0:0.000}", final2).ToString());
-            //// OLD ALGO HERE UN COMMENT IT FROM SELECTING FROM HERE TO THE END WHERE YOU SEE "THE END"
-            addline("0-500 Chunks:" + ch5);
-            addline("500-1000 Chunks:" + ch10);
-            addline("1000-1500 Chunks:" + ch15);
-            addline("1500-2000 Chunks:" + ch20);
-            addline("2000-3000 Chunks:" + ch30);
-            
+            double z10 = final10;
+            double z2=final2;
+            string ss, se;
+            ss = "";
+            se = "";
+            double q2, q10, q;
+            q10 = 0;
+            q2 = 0;
+            q = 0;
             double toraid5, toraid6;
             toraid5 = 0;
             toraid6 = 0;
-            // calc chunks into raid5 and 6 useable space (need pairs for raid5) and triplets for raid6
-            if (ch5 == 1) { toraid5 += 0; toraid6 += 0; }
-            else if (ch5 == 2) { toraid5 += 500; toraid6 += 0; }
-            else if (ch5 == 3) { toraid5 += 1000; toraid6 += 500; }
-            else if (ch5 > 3) { toraid5 += (ch5 - 1) * 500; toraid6 += (ch5 - 2) * 500; }
-            if (ch10 == 1) { toraid5 += 0; toraid6 += 0; }
-            else if (ch10 == 2) { toraid5 += 500; toraid6 += 0; }
-            else if (ch10 == 3) { toraid5 += 1000; toraid6 += 500; }
-            else if (ch10 > 3) { toraid5 += (ch10 - 1) * 500; toraid6 += (ch10 - 2) * 500; }
-            if (ch15 == 1) { toraid5 += 0; toraid6 += 0; }
-            else if (ch15 == 2) { toraid5 += 500; toraid6 += 0; }
-            else if (ch15 == 3) { toraid5 += 1000; toraid6 += 500; }
-            else if (ch15 > 3) { toraid5 += (ch15 - 1) * 500; toraid6 += (ch15 - 2) * 500; }
-            if (ch20 == 1) { toraid5 += 0; toraid6 += 0; }
-            else if (ch20 == 2) { toraid5 += 500; toraid6 += 0; }
-            else if (ch20 == 3) { toraid5 += 1000; toraid6 += 500; }
-            else if (ch20 > 3) { toraid5 += (ch20 - 1) * 500; toraid6 += (ch20 - 2) * 500; }
-            if (ch30 == 1) { toraid5 += 0; toraid6 += 0; }
-            else if (ch30 == 2) { toraid5 += 1000; toraid6 += 0; }
-            else if (ch30 == 3) { toraid5 += 2000; toraid6 += 1000; }
-            else if (ch30 > 3) { toraid5 += (ch30 - 1) * 1000; toraid6 += (ch30 - 2) * 1000; }
+            double ds, de, diffd;
+            ds = 0; de = 0; diffd = 0;
+            for (int c = 0; c < drivessize; c++)
+            {
+
+                if (c == 0)
+                {
+                    ds = 0;
+                }
+                else
+                {
+                    ds = Convert.ToDouble(drives[c - 1]);
+                }
+                de = Convert.ToDouble(drives[c]);
+                diffd = de - ds;
+                //
+                if (c == 0) { ss = "0"; se = drives[c].ToString(); } else { ss = drives[c - 1].ToString(); se = drives[c].ToString(); }
+                q = Convert.ToDouble(chist[c]);
+                q10 = q * diffd / 1000;
+                q2 = (q * diffd * 0.93132257461) / 1024;
+                if ((chist5[c]) > 0) //if negative or zero dont count
+                {
+                    toraid5 += Convert.ToDouble(chist5[c]) * diffd;
+                }
+                if ((chist6[c]) > 0) //if negative or zero dont count
+                {
+                    toraid6 += Convert.ToDouble(chist6[c]) * diffd;
+                }
+            }
             double spaceR5tb, spaceR6tb;
             spaceR5tb = toraid5 / 1000;
             spaceR6tb = toraid6 / 1000;
-            addline("Space Allotted in Base 10 - Raid5: " + String.Format("{0:0}", toraid5) + " GB, Raid6: " + String.Format("{0:0}", toraid6) + " GB");
-            addline("Space Allotted in Base 10 - Raid5: " + String.Format("{0:0.000}", spaceR5tb) + " TB, Raid6: " + String.Format("{0:0.000}", spaceR6tb) + " TB");
             double spaceR5_2, spaceR6_2;
             double spaceR5_2_tb, spaceR6_2_tb;
             bool raid5 = false;
@@ -383,9 +481,6 @@ namespace WindowsFormsApplication1
             spaceR6_2 = toraid6 * 0.93132257461;
             spaceR5_2_tb = spaceR5_2 / 1024;
             spaceR6_2_tb = spaceR6_2 / 1024;
-            addline("Space Allotted in Base 2 - Raid5: " + String.Format("{0:0}", spaceR5_2) + " GB, Raid6: " + String.Format("{0:0}", spaceR6_2) + " GB");
-            addline("Space Allotted in Base 2 - Raid5: " + String.Format("{0:0.000}", spaceR5_2_tb) + " TB, Raid6: " + String.Format("{0:0.000}", spaceR6_2_tb) + " TB");
-            addline("NOTE: Every size value below is in base 2, 'real space'");
             double totalos, totalswap, totalosandswap;
             totalos = os_size * used;
             totalswap = swap_size * used;
@@ -419,33 +514,173 @@ namespace WindowsFormsApplication1
             }
             ro5 = afteros5 * raid_overhead;
             ro6 = afteros6 * raid_overhead;
-            addline("OS & SWAP will take up " + String.Format("{0:0.000}", os_size + swap_size) + " GB/Disk on " + used + " Disks, Totaling: " + String.Format("{0:0.000}", totalosandswap));
-            addline("The raidover head at " + raid_overhead * 100 + "% will cost - Raid5: " + String.Format("{0:0}", ro5) + " GB Raid6: " + String.Format("{0:0}", ro6) + " GB");
-            addline("After OS & SWAP - Raid5: " + String.Format("{0:0.000}", afteros5) + " GB, Raid6: " + String.Format("{0:0.000}", afteros6) + " GB");
-            addline("After Overhead  - Raid5: " + String.Format("{0:0.000}", afterOverhead5) + " GB, Raid6: " + String.Format("{0:0.000}", afterOverhead6) + " GB");
-            addline("After Snapshot  - Raid5: " + String.Format("{0:0.000}", final5gb) + " GB, Raid6: " + String.Format("{0:0.000}", final6gb) + " GB = FINAL VALUES");
+            double osperdisk = os_size + swap_size;
             string pr5, pr6;
             pr5 = "NOT POSSIBLE";
             pr6 = "NOT POSSIBLE";
             if (raid5 == true) { pr5 = "POSSIBLE"; }
             if (raid6 == true) { pr6 = "POSSIBLE"; }
-            addline("RAID5: " + pr5 + " - RAID6: " + pr6);
-            addline("####### FINAL #######");
-            addline("Raid5: " + String.Format("{0:0.000}", final5gb) + " GB, " + String.Format("{0:0.000}", final5tb) + " TB");
-            addline("Raid6: " + String.Format("{0:0.000}", final6gb) + " GB, " + String.Format("{0:0.000}", final6tb) + " TB");
             tssl.Text = "Disks: " + used.ToString() + ", Given Space: " + (final10 / 1000).ToString() + " TB, ";// + "Final R5: " + String.Format("{0:0.000}", finalfs5tb) + " TB,  Final R6: " + String.Format("{0:0.000}", finalfs6tb) + " TB";
+            double onediskgb, onedisktb;
+            onediskgb=0;
+            onedisktb=0;
             if (used == 1)
             {
-                double onediskgb, onedisktb;
                 onediskgb = (final2 - totalosandswap) * (1 - raid_overhead) - snapshot;
                 onedisktb = onediskgb / 1024;
-                addline("####### FINAL WITH 1 DISK #######");
-                addline("1 DISK FINAL: " + String.Format("{0:0.000}", onediskgb) + " GB, " + String.Format("{0:0.000}", onedisktb) + " TB");
                 tssl.Text += "FINAL VOLUME SIZE: " + String.Format("{0:0.000}", onedisktb) + " TB";
             }
             else
             {
                 tssl.Text += "FINAL R5: " + String.Format("{0:0.00}", final5tb) + " TB, FINAL R6: " + String.Format("{0:0.00}", final6tb) + " TB";
+            }
+            if (torun == true)
+            {
+                //difference stuff here
+                //original
+                // differences are already 0 at this point
+                snapshot0 = snapshot;
+                architecture0 = stype;
+                drives0 = used; //total drives in place basically used0 
+                totalgb100 = z10;
+                totalgb102 = z2;
+                osper0 = osperdisk;
+                ostotal0 = totalosandswap;
+                ro10 = ro5;
+                ro20 = ro6;
+                afteros50 = afteros5;
+                afteros60 = afteros6;
+                afterro50 = afterOverhead5;
+                afterro60 = afterOverhead6;
+                aftersnap50 = final5gb;
+                aftersnap60 = final6gb;
+                r5poss0 = pr5;
+                r6poss0 = pr6;
+                final5gb0 = final5gb;
+                final6gb0 = final6gb;
+                final5tb0 = final5tb;
+                final6tb0 = final6tb;
+                onediskgb0 = onediskgb;
+                onedisktb0 = onedisktb;
+                cwl(architecture0 + "  tten:" + totalgb100.ToString() + "  f:" + z10.ToString() + "  o:" + onediskgb0);
+            }
+           else 
+            {
+               //difference
+                snapshot0d = snapshot-snapshot0;
+                drives0d = used-drives0;
+                totalgb100d = z10 - totalgb100;
+                totalgb102d = z2 - totalgb102;
+                osper0d = osperdisk - osper0;
+                ostotal0d = totalosandswap - ostotal0;
+                ro10d = ro5 - ro10;
+                ro20d = ro6 - ro20;
+                afteros50d = afteros5 - afteros50;
+                afteros60d = afteros6 - afteros60;
+                afterro50d = afterOverhead5 - afterro50;
+                afterro60d = afterOverhead6 - afterro60;
+                aftersnap50d = final5gb - aftersnap50;
+                aftersnap60d = final6gb - aftersnap60;
+                final5gb0d = final5gb - final5gb0;
+                final6gb0d = final6gb - final6gb0;
+                final5tb0d = final5tb - final5tb0;
+                final6tb0d = final6tb - final6tb0;
+                onediskgb0d = onediskgb0 - onediskgb;
+                onedisktb0d = onedisktb0 - onedisktb;
+                onedisktb0d.ToString();
+            }
+            //key is to calculate the difference before setting the new 0
+            torun = false;
+            //show results
+            addline("# of Slots: " + numberofdrives);
+            addword_bold("Snapshot size [GB base 2]: ");
+            addword_bred(snapshot.ToString());
+            addword("  ");
+            addword_bblue(snapshot0.ToString());
+            addword("  ");
+            addword_blue(snapshot0d.ToString());
+            addnl();
+            addword_bold("Architecture: "); addword_bred(stype); addword("  "); addword_bblue(architecture0); addnl();
+            addword_bold("Used Drives: ");
+            addword_bred(used.ToString()); //new
+            addword("  ");
+            addword_bblue(drives0.ToString()); //old
+            addword("  ");
+            addword_blue(drives0d.ToString()); //diff
+            addnl();
+            addline("Raid Overhead: " + raid_overhead * 100 + "%");
+            addword("# of Drives -");
+            for (int o = 0; o < drivessize; o++)
+            {
+                if (o == 0)
+                {
+                    addword(" ");
+                }
+                addword(drives[o].ToString() + "GB="); addword_bold(hist[o].ToString());
+                if (o != (drivessize - 1))
+                {
+                    addword(", ");
+                }
+            }
+            addnl();
+            addword_bold("Total Disk Size In Place [GB base 10]: "); addword_bred(String.Format("{0:0.000}", final10).ToString()); addword("  "); addword_bblue(String.Format("{0:0.000}", totalgb100).ToString()); addword("  "); addword_blue(String.Format("{0:0.000}", totalgb100d).ToString()); addnl();
+            addword_bold("Total Disk Size In Place [GB base 2]: "); addword_bred((String.Format("{0:0.000}", final2).ToString())); addword("  "); addword_bblue((String.Format("{0:0.000}", totalgb102).ToString())); addword("  "); addword_blue(String.Format("{0:0.000}", totalgb102d).ToString()); addnl();
+            for (int c = 0; c < drivessize; c++)
+            {
+
+                if (c == 0)
+                {
+                    ds = 0;
+                }
+                else
+                {
+                    ds = Convert.ToDouble(drives[c - 1]);
+                }
+                de = Convert.ToDouble(drives[c]);
+                diffd = de - ds;
+                //
+                if (c == 0) { ss = "0"; se = drives[c].ToString(); } else { ss = drives[c - 1].ToString(); se = drives[c].ToString(); }
+                q = Convert.ToDouble(chist[c]);
+                q10 = q * diffd / 1000;
+                q2 = (q * diffd * 0.93132257461) / 1024;
+                 addline(ss + "-" + se + " Chunks:" + q.ToString() + " ---> Chunk Space base-two: " + String.Format("{0:0.000}", q10) + " TB --- base-ten: " + String.Format("{0:0.000}", q2) + " TB");
+            }
+            //addline("Space Allotted in Base 10 - Raid5: " + String.Format("{0:0}", toraid5) + " GB, Raid6: " + String.Format("{0:0}", toraid6) + " GB");
+            addline("Space Allotted in Base 10 - Raid5: " + String.Format("{0:0.000}", spaceR5tb) + " TB, Raid6: " + String.Format("{0:0.000}", spaceR6tb) + " TB");
+            //addline("Space Allotted in Base 2 - Raid5: " + String.Format("{0:0}", spaceR5_2) + " GB, Raid6: " + String.Format("{0:0}", spaceR6_2) + " GB");
+            addline("Space Allotted in Base 2 - Raid5: " + String.Format("{0:0.000}", spaceR5_2_tb) + " TB, Raid6: " + String.Format("{0:0.000}", spaceR6_2_tb) + " TB");
+            addline_italic("NOTE: Every size value below is in base 2, 'real space'");
+            addline("OS & SWAP will take up " + String.Format("{0:0.000}", osperdisk) + " GB/Disk on " + used + " Disks, Totaling: " + String.Format("{0:0.000}", totalosandswap));
+            addline("The raidover head at " + raid_overhead * 100 + "% will cost - Raid5: " + String.Format("{0:0}", ro5) + " GB Raid6: " + String.Format("{0:0}", ro6) + " GB");
+            addline("After OS & SWAP - Raid5: " + String.Format("{0:0.000}", afteros5) + " GB, Raid6: " + String.Format("{0:0.000}", afteros6) + " GB");
+            addline("After Overhead  - Raid5: " + String.Format("{0:0.000}", afterOverhead5) + " GB, Raid6: " + String.Format("{0:0.000}", afterOverhead6) + " GB");
+            addline("After Snapshot  - Raid5: " + String.Format("{0:0.000}", final5gb) + " GB, Raid6: " + String.Format("{0:0.000}", final6gb) + " GB = FINAL VALUES");
+            addline_italic("RAID5: " + pr5 + " - RAID6: " + pr6);
+            if (used != 1)
+            {
+                addline_bold("####### FINAL RESULTS #######");
+                addword_bold("Raid5: "); addword(String.Format("{0:0.000}", final5gb) + " GB, "); addword_bred(String.Format("{0:0.000}", final5tb) + " TB");
+                addword("  ");
+                addword_bblue(String.Format("{0:0.000}",final5tb0) + " TB");
+                addword("  ");
+                addword_blue(String.Format("{0:0.000}",final5tb0d) + " TB");
+                addnl();
+                addword_bold("Raid6: "); addword(String.Format("{0:0.000}", final6gb) + " GB, "); addword_bred(String.Format("{0:0.000}", final6tb) + " TB");
+                addword("  ");
+                addword_bblue(String.Format("{0:0.000}",final6tb0) + " TB");
+                addword("  ");
+                addword_blue(String.Format("{0:0.000}",final6tb0d) + " TB");
+                addnl();
+            }
+            else
+            {
+                addline_bold("####### FINAL RESULTS WITH 1 DISK #######");
+                addword_bold("1 DISK FINAL: "); addword(String.Format("{0:0.000}", onediskgb) + " GB, "); addword_bred(String.Format("{0:0.000}", onedisktb) + " TB");
+                addword("  ");
+                addword_bblue(String.Format("{0:0.000}",onedisktb0) + " TB");
+                addword("  ");
+                addword_blue(String.Format("{0:0.000}",onedisktb0d) + " TB");
+                addnl();
             }
         }
         private void addline(string str)
@@ -456,10 +691,232 @@ namespace WindowsFormsApplication1
                 itm = ((Control)item).Name;
                 if (itm == "lbr")
                 {
-                    ((ListBox)item).Items.Add(str);
+                    ((RichTextBox)item).AppendText(str+ Environment.NewLine);
                 }
             }
         }
+        private void addword(string str)
+        {
+            string itm;
+            foreach (var item in this.Controls)
+            {
+                itm = ((Control)item).Name;
+                if (itm == "lbr")
+                {
+                    ((RichTextBox)item).AppendText(str );
+                }
+            }
+        }
+        private void addnl()
+        {
+            string itm;
+            foreach (var item in this.Controls)
+            {
+                itm = ((Control)item).Name;
+                if (itm == "lbr")
+                {
+                    ((RichTextBox)item).AppendText(Environment.NewLine);
+                }
+            }
+        }
+
+
+        private void addline_red(string str)
+        {
+            string itm;
+            int before, after, lengthh;
+            foreach (var item in this.Controls)
+            {
+                itm = ((Control)item).Name;
+                if (itm == "lbr")
+                {
+                     before = ((RichTextBox)item).Text.Length;
+                     ((RichTextBox)item).AppendText(str +Environment.NewLine);
+                     after = ((RichTextBox)item).Text.Length;
+                     lengthh = after - before;
+                     cwl(before + " AFTER: " + after + " LENGTH:" + lengthh);
+                     ((RichTextBox)item).Select(before, lengthh);
+                     ((RichTextBox)item).SelectionColor = Color.Red;
+                     ((RichTextBox)item).Select(after, 0);
+                     ((RichTextBox)item).SelectionColor = Color.Black; 
+                }
+            }
+        }
+        private void addline_blue(string str)
+        {
+            string itm;
+            int before, after, lengthh;
+            if ( comparison_enabled)
+            {
+                foreach (var item in this.Controls)
+                {
+                    itm = ((Control)item).Name;
+                    if (itm == "lbr")
+                    {
+                        before = ((RichTextBox)item).Text.Length;
+                        ((RichTextBox)item).AppendText(str + Environment.NewLine);
+                        after = ((RichTextBox)item).Text.Length;
+                        lengthh = after - before;
+                        cwl(before + " AFTER: " + after + " LENGTH:" + lengthh);
+                        ((RichTextBox)item).Select(before, lengthh);
+                        ((RichTextBox)item).SelectionColor = Color.Blue;
+                        ((RichTextBox)item).Select(after, 0);
+                        ((RichTextBox)item).SelectionColor = Color.Black;
+                    }
+                }
+            }
+        }
+        private void addword_red(string str)
+        {
+            string itm;
+            int before, after, lengthh;
+            foreach (var item in this.Controls)
+            {
+                itm = ((Control)item).Name;
+                if (itm == "lbr")
+                {
+                    before = ((RichTextBox)item).Text.Length;
+                    ((RichTextBox)item).AppendText(str );
+                    after = ((RichTextBox)item).Text.Length;
+                    lengthh = after - before;
+                    ((RichTextBox)item).Select(before, lengthh);
+                    ((RichTextBox)item).SelectionColor = Color.Red;
+                    ((RichTextBox)item).Select(after, 0);
+                    ((RichTextBox)item).SelectionColor = Color.Black;
+                }
+            }
+        }
+        private void addword_blue(string str)
+        {
+            string itm;
+            int before, after, lengthh;
+            if (comparison_enabled)
+            {
+                foreach (var item in this.Controls)
+                {
+                    itm = ((Control)item).Name;
+                    if (itm == "lbr")
+                    {
+                        before = ((RichTextBox)item).Text.Length;
+                        ((RichTextBox)item).AppendText(str);
+                        after = ((RichTextBox)item).Text.Length;
+                        lengthh = after - before;
+                        ((RichTextBox)item).Select(before, lengthh);
+                        ((RichTextBox)item).SelectionColor = Color.Blue;
+                        ((RichTextBox)item).Select(after, 0);
+                        ((RichTextBox)item).SelectionColor = Color.Black;
+                    }
+                }
+            }
+        }
+        private void addword_bred(string str)
+        {
+            string itm;
+            int before, after, lengthh;
+            foreach (var item in this.Controls)
+            {
+                itm = ((Control)item).Name;
+                if (itm == "lbr")
+                {
+                    before = ((RichTextBox)item).Text.Length;
+                    ((RichTextBox)item).AppendText(str);
+                    after = ((RichTextBox)item).Text.Length;
+                    lengthh = after - before;
+                    ((RichTextBox)item).Select(before, lengthh);
+                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Bold);
+                    ((RichTextBox)item).SelectionColor = Color.Red;
+                    ((RichTextBox)item).Select(after, 0);
+                    ((RichTextBox)item).SelectionColor = Color.Black;
+                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Regular);
+                }
+            }
+        }
+        private void addword_bblue(string str)
+        {
+            string itm;
+            int before, after, lengthh;
+            if (comparison_enabled)
+            {
+                foreach (var item in this.Controls)
+                {
+                    itm = ((Control)item).Name;
+                    if (itm == "lbr")
+                    {
+                        before = ((RichTextBox)item).Text.Length;
+                        ((RichTextBox)item).AppendText(str);
+                        after = ((RichTextBox)item).Text.Length;
+                        lengthh = after - before;
+                        ((RichTextBox)item).Select(before, lengthh);
+                        ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Bold);
+                        ((RichTextBox)item).SelectionColor = Color.Blue;
+                        ((RichTextBox)item).Select(after, 0);
+                        ((RichTextBox)item).SelectionColor = Color.Black;
+                        ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Regular);
+                    }
+                }
+            }
+        }
+        private void addword_bold(string str)
+        {
+            string itm;
+            int before, after, lengthh;
+            foreach (var item in this.Controls)
+            {
+                itm = ((Control)item).Name;
+                if (itm == "lbr")
+                {
+                    before = ((RichTextBox)item).Text.Length;
+                    ((RichTextBox)item).AppendText(str );
+                    after = ((RichTextBox)item).Text.Length;
+                    lengthh = after - before;
+                    ((RichTextBox)item).Select(before, lengthh);
+                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Bold);
+                    ((RichTextBox)item).Select(after, 0);
+                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Regular);
+                }
+            }
+        }
+        private void addline_bold(string str)
+        {
+            string itm;
+            int before, after, lengthh;
+            foreach (var item in this.Controls)
+            {
+                itm = ((Control)item).Name;
+                if (itm == "lbr")
+                {
+                    before = ((RichTextBox)item).Text.Length;
+                    ((RichTextBox)item).AppendText(str + Environment.NewLine);
+                    after = ((RichTextBox)item).Text.Length;
+                    lengthh = after - before;
+                    ((RichTextBox)item).Select(before, lengthh);
+                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Bold);
+                    ((RichTextBox)item).Select(after, 0);
+                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Regular);
+                }
+            }
+        }
+        private void addline_italic(string str)
+        {
+            string itm;
+            int before, after, lengthh;
+            foreach (var item in this.Controls)
+            {
+                itm = ((Control)item).Name;
+                if (itm == "lbr")
+                {
+                    before = ((RichTextBox)item).Text.Length;
+                    ((RichTextBox)item).AppendText(str + Environment.NewLine);
+                    after = ((RichTextBox)item).Text.Length;
+                    lengthh = after - before;
+                    ((RichTextBox)item).Select(before, lengthh);
+                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Italic);
+                    ((RichTextBox)item).Select(after, 0);
+                    ((RichTextBox)item).SelectionFont = new Font(((RichTextBox)item).Font, FontStyle.Regular);
+                }
+            }
+        }
+
         private void removelines()
         {
             string itm;
@@ -468,32 +925,25 @@ namespace WindowsFormsApplication1
                 itm = ((Control)item).Name;
                 if (itm == "lbr")
                 {
-                    ((ListBox)item).Items.Clear();
-
+                    ((RichTextBox)item).Rtf = "";
                 }
             }
         }
         private void Form1_Click(object sender, EventArgs e)
         {
-            // testing stuff
         }
-
         private void rbSPARC_CheckedChanged(object sender, EventArgs e) { calc(true); }
         private void Form1_Shown(object sender, EventArgs e) { calc(true); }
         private void nSnap_ValueChanged(object sender, EventArgs e) { calc(true); }
         private void rbARM_CheckedChanged(object sender, EventArgs e) { calc(true); }
         private void rbX86_CheckedChanged(object sender, EventArgs e) { calc(true); }
-
         private void nSnap_KeyUp(object sender, KeyEventArgs e)
         {
-          
         }
-
         private void button1_Click(object sender, EventArgs e)
         {
             calc(true);
         }
-
         private void button2_Click(object sender, EventArgs e)
         {
             showhelp();
@@ -502,105 +952,130 @@ namespace WindowsFormsApplication1
         {
             MessageBox.Show("NOTE: The numbers here are based on a calculation and may vary in the actual system. Also note this program is time independent meaning it does not care about the chronological order that you add or remove drives. In real-life each system preforms under its very own characteristics when drives are added and does depend on time(in a way), for example: if your first drive was a 2TB drive, I would not be able to add smaller drives there after to expand. So hence, each calculation is as if you have factory defaulted and built an XRAID system out of the drives that you have selected. Other factors determine what final size your system will be. Regards, Kostia Khlebopros of NETGEAR.");
         }
+        private void cms_Opening(object sender, CancelEventArgs e)
+        {
+        }
+        private void cms_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            string optionselected = e.ClickedItem.Text;
+            if (optionselected == "Add Drive Size")
+            {
+                add_drive();
+            }
+            else if (optionselected == "Remove Drive Size")
+            {
+                del_drive();
+            }
+            else if (optionselected == "DEFAULT")
+            {
+                def_drive();
+            }
+         }
+        private void add_drive()
+        {
+            if (drives.Count >= 60)
+            {
+                MessageBox.Show("Cant add more than 60 different sizes of drives.");
+                return;
+            }
+            Form2 f = new Form2();
+            f.Text = "ADD DRIVE SIZE";
+            f.lb.Text = "What size of drive would you like to add? [Gigabytes in base 10, drive manufacturer units]";
+            f.Width = f.PreferredSize.Width + 10;
+            f.Height = f.PreferredSize.Height + 10;
+            f.ShowDialog();
+            string mess = f.mess;
+            // convert to useable number
+            if (mess == "cancel") { return; }
+            double x = -1;
+            try
+            {
+                x = Convert.ToDouble(mess);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("That is an invalid drive size. Just write the number in GB without the unit. So if it was 750 GB drive. I would just write 750.");
+                return;
+            }
+            // check if exists
+            double d = x;
+            bool there;
+            there = false;
+            for (int i = 0; i <= drives.Count - 1; i++)
+            {
+                if (d.Equals(drives[i])) { there = true; }
+            }
+            if (there)
+            { return; }
+            else
+            {
+                drives.Add(x); drives.Sort();
+            }
+            premakeall();
+        }
+        private void del_drive()
+        {
+            if (drives.Count == 1)
+            {
+                MessageBox.Show("Got to have at least 1 drive size on the screen.");
+                return;
+            }
+            Form2 f = new Form2();
+            f.Text = "DELETE DRIVE SIZE";
+            f.lb.Text = "What drive would you like to delete? [Just write the GB size of the drive, so if had a 4000 GB drive I would just type 4000]";
+            f.Width = f.PreferredSize.Width + 10;
+            f.Height = f.PreferredSize.Height + 10;
+            f.ShowDialog();
+            string mess = f.mess;
+            // convert to useable number
+            if (mess == "cancel") { return; }
+            double x = -1;
+            try
+            {
+                x = Convert.ToDouble(mess);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("That is an invalid drive size. Just write the number in GB without the unit. So if it was 750 GB drive. I would just write 750.");
+                return;
+            }
+            double d = x;
+            bool there;
+            int where = -1;
+            there = false;
+            for (int i = 0; i <= drives.Count - 1; i++)
+            {
+                if (d.Equals(drives[i])) { there = true; where = i; }
+            }
+            // delete to list
+            if (there)
+            { drives.RemoveAt(where); drives.Sort(); }
+            else
+            {
+                return;
+            }
+            premakeall();
+
+        }
+        private void def_drive()
+        {
+            if (MessageBox.Show("Are you sure you want to default the drive size entries to default?", "Default", MessageBoxButtons.YesNo).ToString().ToLower() == "yes")
+            {
+                init_drives();
+                premakeall();
+            }
+            else
+            {
+                return;
+            }
+        }
+        private void button3_Click(object sender, EventArgs e)
+        {
+           // clear_baseline();
+            torun = true;
+            premakeall();
+        }
     }
 }
 
-
-
-//// OLD ALGO HERE UN COMMENT IT FROM SELECTING FROM HERE TO THE END WHERE YOU SEE "THE END"
-//double totalos, totalswap, totalosandswap;
-//double finalfs5gb, finalfs6gb;
-//double finalfs5tb, finalfs6tb;
-//double onediskgb, onedisktb;
-//double finalimfs5gb, finalimfs6gb;
-//double finalimfs5tb, finalimfs6tb;
-////raid 5 calcs (need 2 disks of same size)
-//double w5005, w10005, w15005, w20005, w30005, w5;
-//double w5006, w10006, w15006, w20006, w30006, w6;
-//w5005 = 0; w10005 = 0; w15005 = 0; w20005 = 0; w30005 = 0;
-//w5006 = 0; w10006 = 0; w15006 = 0; w20006 = 0; w30006 = 0;
-//double r5005, r10005, r15005, r20005, r30005, r5;
-//double r5006, r10006, r15006, r20006, r30006, r6;
-//r5005 = 0; r10005 = 0; r15005 = 0; r20005 = 0; r30005 = 0;
-//r5006 = 0; r10006 = 0; r15006 = 0; r20006 = 0; r30006 = 0;
-//w6 = 0; w5 = 0; r5 = 0; r6 = 0;
-//if (c500 >= 2) { r5005 = (c500 - 1) * 0.93132257461 * 500; } else { w5005 = (c500) * 0.93132257461 * 500; }
-//if (c1500 >= 2) { r15005 = (c1500 - 1) * 0.93132257461 * 1500; } else { w15005 = c1500 * 0.93132257461 * 1500; }
-//if (c2000 >= 2) { r20005 = (c2000 - 1) * 0.93132257461 * 2000; } else { w20005 = c2000 * 0.93132257461 * 2000; }
-//if (c3000 >= 2) { r30005 = (c3000 - 1) * 0.93132257461 * 3000; } else { w30005 = c3000 * 0.93132257461 * 3000; }
-//w5 = w5005 + w10005 + w15005 + w20005 + w30005;
-//r5 = r5005 + r10005 + r15005 + r20005 + r30005;
-////raid 6 calcs (need 3 disks of same size)
-//if (c500 >= 3) { r5006 = (c500 - 2) * 0.93132257461 * 500; } else { w5006 = c500 * 0.93132257461 * 500; }
-//if (c1000 >= 3) { r10006 = (c1000 - 2) * 0.93132257461 * 1000; } else { w10006 = c1000 * 0.93132257461 * 1000; }
-//if (c1500 >= 3) { r15006 = (c1500 - 2) * 0.93132257461 * 1500; } else { w15006 = c1500 * 0.93132257461 * 1500; }
-//if (c2000 >= 3) { r20006 = (c2000 - 2) * 0.93132257461 * 2000; } else { w20006 = c2000 * 0.93132257461 * 2000; }
-//if (c3000 >= 3) { r30006 = (c3000 - 2) * 0.93132257461 * 3000; } else { w30006 = c3000 * 0.93132257461 * 3000; }
-//w6 = w5006 + w10006 + w15006 + w20006 + w30006;
-//r6 = r5006 + r10006 + r15006 + r20006 + r30006;
-//addline("# of 500 GB: " + c500.ToString());
-//addline("# of 1000 GB: " + c1000.ToString());
-//addline("# of 1500 GB: " + c1500.ToString());
-//addline("# of 2000 GB: " + c2000.ToString());
-//addline("# of 3000 GB: " + c3000.ToString());
-//addline("Number of Unused/Used Disk [GB base 2]: " + unused + " / " + used);
-//addline("Raid 5 Space Used (minus 1 disk) [GB base 2]: " + String.Format("{0:0.000}", r5));
-//addline("Raid 6 Space Used (minus 2 disks) [GB base 2]: " + String.Format("{0:0.000}", r6));
-//addline("Raid 5 Wasted Space (missing pairs of disks) [GB base 2]: " + String.Format("{0:0.000}", w5));
-//addline("Raid 6 Wasted Space (missing pairs of disks) [GB base 2]: " + String.Format("{0:0.000}", w6));
-//totalos = os_size * used;
-//totalswap = swap_size * used;
-//totalosandswap = totalos + totalswap;
-//addline(os_size.ToString() + " GB os + " + swap_size.ToString() + " GB swap = " + os_and_swap.ToString() + " GB total [GBs IN BASE 2] per disk");
-//addline(totalos + " GB os + " + totalswap + " GB swap = " + totalosandswap + " GB total [GBs IN BASE 2] TOTAL");
-//finalfs5gb = (r5 - totalosandswap) * (1 - raid_overhead) - snapshot;
-//finalfs6gb = (r6 - totalosandswap) * (1 - raid_overhead) - snapshot;
-//finalfs5tb = finalfs5gb / 1024;
-//finalfs6tb = finalfs6gb / 1024;
-//onediskgb = (final2 - totalosandswap) * (1 - raid_overhead) - snapshot;
-//onedisktb = onediskgb / 1024;
-//finalimfs5gb = (final2 - (final2 / used) - totalosandswap) * (1 - raid_overhead) - snapshot;
-//finalimfs6gb = (final2 - ((final2 / used) * 2) - totalosandswap) * (1 - raid_overhead) - snapshot;
-//finalimfs5tb = finalimfs5gb / 1024;
-//finalimfs6tb = finalimfs6gb / 1024;
-//addline("** NOTE: All values below are the results and are in base 2. ");
-//if (used == 1)
-//{
-//    addline("1 DISK FINAL USEABLE VOLUME SIZE: " + String.Format("{0:0.000}", onediskgb) + " GB = " + String.Format("{0:0.000}", onedisktb) + " TB");
-//    tssl.Text = "Disks: 1, Given Space: " + (final10 / 1000).ToString() + " TB, Final: " + String.Format("{0:0.000}", onedisktb) + " TB";
-
-//}
-//else
-//{
-//    addline("** NOTE: IMAGINARY meaning if didnt need pairs. ");
-//    addline("RAID 5 IMAGINARY VOL SIZE: " + String.Format("{0:0.000}", finalimfs5gb) + " GB = " + String.Format("{0:0.000}", finalimfs5tb) + " TB");
-
-//    if (finalimfs6gb < 0)
-//    {
-//        addline("RAID 6 IMAGINARY VOL SIZE: N/A");
-//        //addline("NOTE: even for imaginary no RAID 6");
-//        //addline("      if no triplets, RAID 5 would take over");
-//    }
-//    else
-//    {
-//        addline("RAID 6 IMAGINARY VOL SIZE: " + String.Format("{0:0.000}", finalimfs6gb) + " GB = " + String.Format("{0:0.000}", finalimfs6tb) + " TB");
-//    }
-//    // BELOW ARE THE RESULT NUMBERS
-//    // BELOW ARE THE RESULT NUMBERS
-//    // BELOW ARE THE RESULT NUMBERS
-//    // BELOW ARE THE RESULT NUMBERS
-//    // BELOW ARE THE RESULT NUMBERS
-//    addline("** RAID 5 FINAL USEABLE VOLUME SIZE: " + String.Format("{0:0.000}", finalfs5gb) + " GB = " + String.Format("{0:0.000}", finalfs5tb) + " TB");
-//    if (finalfs6gb < 0)
-//    {
-//        addline("NOTE: No triplets, No Raid 6");
-//        tssl.Text = "Disks: " + used.ToString() + ", Given Space: " + (final10 / 1000).ToString() + " TB, Final R5: " + String.Format("{0:0.000}", finalfs5tb) + " TB,  Final R6: N/A";
-//     }
-//    else
-//    {
-//        addline("** RAID 6 FINAL USEABLE VOLUME SIZE: " + String.Format("{0:0.000}", finalfs6gb) + " GB = " + String.Format("{0:0.000}", finalfs6tb) + " TB");
-//        tssl.Text = "Disks: " + used.ToString() + ", Given Space: " + (final10 / 1000).ToString() + " TB, Final R5: " + String.Format("{0:0.000}", finalfs5tb) + " TB,  Final R6: " + String.Format("{0:0.000}", finalfs6tb) + " TB"; 
-//    }
-//}
-////  "THE END"
 
